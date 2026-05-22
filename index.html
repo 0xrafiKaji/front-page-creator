@@ -1,0 +1,633 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Front Page Creator</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:wght@400;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <style>
+    :root{
+      --bg:#f4f7fb;
+      --card:#ffffff;
+      --ink:#101828;
+      --muted:#667085;
+      --line:#d0d5dd;
+      --accent:#0ea5e9;
+      --accent2:#10b981;
+      --shadow: 0 20px 40px rgba(16,24,40,.10);
+      --paper-shadow: 0 18px 40px rgba(16,24,40,.18);
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family:"Noto Sans",system-ui,-apple-system,Segoe UI,Roboto,sans-serif;
+      background:linear-gradient(180deg,#f8fbff 0%, var(--bg) 100%);
+      color:var(--ink);
+      -webkit-font-smoothing: antialiased;
+      text-rendering: geometricPrecision;
+    }
+    .shell{
+      display:grid;
+      grid-template-columns: 420px 1fr;
+      gap:24px;
+      min-height:100vh;
+      padding:24px;
+    }
+    .panel, .workspace{
+      background:var(--card);
+      border:1px solid rgba(208,213,221,.8);
+      border-radius:24px;
+      box-shadow:var(--shadow);
+    }
+    .panel{
+      padding:20px;
+      overflow:auto;
+    }
+    .brand{
+      display:flex; gap:14px; align-items:center; margin-bottom:18px;
+    }
+    .logoMark{
+      width:48px;height:48px;border-radius:14px;
+      background:linear-gradient(135deg,var(--accent),#8b5cf6);
+      display:grid;place-items:center;color:#fff;font-weight:800;
+      box-shadow:0 10px 24px rgba(14,165,233,.25);
+    }
+    h1{margin:0;font-size:22px;line-height:1.2}
+    .sub{color:var(--muted);font-size:13px;margin-top:4px}
+    .section-title{
+      margin:18px 0 10px;
+      font-size:13px;
+      letter-spacing:.08em;
+      text-transform:uppercase;
+      color:var(--muted);
+      font-weight:800;
+    }
+    .grid{
+      display:grid;
+      gap:10px;
+    }
+    .field{
+      display:grid;
+      gap:6px;
+    }
+    .field label{
+      font-size:13px;
+      font-weight:700;
+      color:#344054;
+    }
+    .field input, .field select, .field textarea{
+      width:100%;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:12px 13px;
+      font:inherit;
+      color:var(--ink);
+      background:#fff;
+      outline:none;
+      transition:.15s border-color,.15s box-shadow;
+    }
+    .field textarea{min-height:84px;resize:vertical}
+    .field input:focus, .field select:focus, .field textarea:focus{
+      border-color:#7dd3fc;
+      box-shadow:0 0 0 4px rgba(14,165,233,.12);
+    }
+    .row2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .row3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:10px}
+    .btnbar{display:flex;gap:10px;flex-wrap:wrap;margin-top:16px}
+    button{
+      border:0;
+      border-radius:14px;
+      padding:12px 16px;
+      font:inherit;
+      font-weight:800;
+      cursor:pointer;
+      transition:transform .15s ease, opacity .15s ease, box-shadow .15s ease;
+    }
+    button:hover{transform:translateY(-1px)}
+    .primary{
+      background:linear-gradient(135deg,var(--accent),#2563eb);
+      color:#fff;
+      box-shadow:0 14px 26px rgba(37,99,235,.18);
+    }
+    .secondary{
+      background:#eef4ff;
+      color:#1d4ed8;
+    }
+    .ghost{
+      background:#f2f4f7;
+      color:#344054;
+    }
+    .hint{
+      margin-top:14px;
+      padding:12px 14px;
+      border-radius:14px;
+      background:#f8fafc;
+      border:1px solid #e4e7ec;
+      color:#475467;
+      font-size:13px;
+      line-height:1.6;
+    }
+
+    .workspace{
+      display:grid;
+      grid-template-rows:auto 1fr;
+      overflow:hidden;
+    }
+    .topbar{
+      display:flex;
+      justify-content:space-between;
+      align-items:center;
+      padding:18px 20px;
+      border-bottom:1px solid #eaecf0;
+      background:linear-gradient(180deg,#fff, #fcfdff);
+    }
+    .topbar .title{
+      display:grid;
+      gap:4px;
+    }
+    .topbar h2{margin:0;font-size:18px}
+    .topbar p{margin:0;color:var(--muted);font-size:13px}
+    .previewWrap{
+      padding:24px;
+      overflow:auto;
+      display:flex;
+      justify-content:center;
+      align-items:flex-start;
+      background:
+        radial-gradient(circle at top left, rgba(14,165,233,.08), transparent 35%),
+        radial-gradient(circle at right top, rgba(16,185,129,.08), transparent 28%),
+        linear-gradient(180deg,#f8fbff,#f4f7fb);
+    }
+    .paper{
+      width:210mm;
+      min-height:297mm;
+      background:white;
+      box-shadow:var(--paper-shadow);
+      border:1px solid rgba(15,23,42,.06);
+      position:relative;
+      padding:12mm 10mm 14mm;
+      overflow:hidden;
+      transform-origin:top center;
+      box-sizing:border-box;
+    }
+    .paper::before{
+      content:"";
+      position:absolute;
+      inset:12px;
+      border:1.5px solid rgba(16,24,40,.9);
+      pointer-events:none;
+    }
+    .paper::after{
+      content:"";
+      position:absolute;
+      left:12px;right:12px;top:12px;bottom:12px;
+      border:1px solid rgba(16,24,40,.25);
+      pointer-events:none;
+    }
+    .uni{
+      text-align:center;
+      margin-top:6mm;
+      color:#146c43;
+      font-family:"Noto Serif",serif;
+      font-weight:800;
+      font-size:22px;
+      letter-spacing:.01em;
+      line-height:1.35;
+    }
+    .loc{
+      text-align:center;
+      margin-top:6px;
+      color:#475467;
+      font-size:13px;
+    }
+    .logoBox{
+      width:140px;height:140px;
+      margin:16px auto 12px;
+      display:grid;
+      place-items:center;
+      overflow:hidden;
+    }
+    .logoBox img{
+      width:100%;
+      height:100%;
+      max-width:100%;
+      max-height:100%;
+      object-fit:contain;
+      display:block;
+    }
+    .faculty, .dept{
+      text-align:center;
+      font-weight:800;
+      font-size:18px;
+      line-height:1.35;
+      margin-top:6px;
+    }
+    .dept{font-size:17px}
+    .mainTitle{
+      text-align:center;
+      margin:18px 0 6px;
+      color:#06b6d4;
+      font-size:30px;
+      font-weight:900;
+      letter-spacing:.04em;
+      text-transform:uppercase;
+    }
+    .courseCard{
+      text-align:center;
+      margin:10px auto 16px;
+      max-width:85%;
+      padding:10px 0 0;
+      font-size:17px;
+      line-height:1.7;
+    }
+    .courseCard strong{
+      font-weight:800;
+    }
+    .mid{
+      display:grid;
+      grid-template-columns:1fr 1fr;
+      gap:28px;
+      margin-top:20px;
+      align-items:start;
+    }
+    .blockTitle{
+      font-family:"Noto Serif",serif;
+      font-size:18px;
+      font-weight:800;
+      display:inline-block;
+      padding-bottom:6px;
+      border-bottom:2px solid #111827;
+      margin-bottom:14px;
+    }
+    .info{
+      font-size:16px;
+      line-height:1.75;
+    }
+    .info .item{
+      margin-bottom:6px;
+      word-break:break-word;
+    }
+    .label{
+      font-weight:800;
+    }
+    .sign{
+      position:absolute;
+      left:18mm;
+      right:18mm;
+      bottom:10mm;
+      display:flex;
+      justify-content:space-between;
+      align-items:flex-end;
+      gap:24px;
+    }
+    .date{
+      font-size:15px;
+      font-family:"Noto Serif",serif;
+    }
+    .signature{
+      min-width:280px;
+      text-align:center;
+      font-size:14px;
+    }
+    .signature .line{
+      height:1px;
+      background:#111827;
+      margin-bottom:8px;
+    }
+    .footerSmall{
+      position:absolute;
+      left:18mm;
+      bottom:12mm;
+      font-size:11px;
+      color:#94a3b8;
+    }
+    @media (max-width: 1200px){
+      .shell{grid-template-columns:1fr}
+    }
+    @media (max-width: 900px){
+      .previewWrap{
+        overflow:auto;
+        justify-content:flex-start;
+        padding:12px;
+      }
+
+      .paper{
+        width:210mm;
+        min-width:210mm;
+        transform:none !important;
+      }
+
+      .mid{grid-template-columns:1fr}
+      .row2,.row3{grid-template-columns:1fr}
+      .signature{min-width:200px}
+      .mainTitle{font-size:30px}
+    }
+  </style>
+</head>
+<body>
+  <div class="shell">
+    <section class="panel">
+      <div class="brand">
+        <div class="logoMark">FP</div>
+        <div>
+          <h1>Front Page Creator</h1>
+          <div class="sub">Make assignment or lab report covers in one click.</div>
+          <div class="sub">Created by Rafi (261071044)</div>
+        </div>
+      </div>
+
+      <div class="section-title">Fixed University Details</div>
+      <div class="hint">
+        <strong>University:</strong> Shanto-Mariam University of Creative Technology<br>
+        <strong>Location:</strong> Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230<br>
+        <strong>Faculty:</strong> Faculty of Engineering and Technology<br>
+        <strong>Department:</strong> Departments of CSE and CSIT
+      </div>
+
+      <div class="section-title">Document Details</div>
+      <div class="grid">
+        <div class="row2">
+          <div class="field">
+            <label>Document Type</label>
+            <select id="docType">
+              <option>Assignment</option>
+              <option>Lab Report</option>
+              <option>Project Report</option>
+            </select>
+          </div>
+          <div class="field">
+            <label>Output</label>
+            <select id="outputType">
+              <option value="pdf">PDF</option>
+              <option value="png">PNG</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="field"><label>Course Title</label><input id="courseTitle" value="Digital Signal Processing"></div>
+        <div class="row2">
+          <div class="field"><label>Course Code</label><input id="courseCode" value="ICE-3108"></div>
+          <div class="field"><label>Topic</label><input id="topic" value="Sampling, Quantization and Encoding"></div>
+        </div>
+
+        <div class="section-title">Student Details</div>
+        <div class="field"><label>Student Name</label><input id="studentName" value="Md. Khalid Hasan"></div>
+        <div class="row3">
+          <div class="field"><label>Student ID</label><input id="studentId" value="24549010067"></div>
+          <div class="field"><label>Semester</label><input id="semester" value="5th Semester"></div>
+          <div class="field"><label>Section</label><input id="section" value="A"></div>
+        </div>
+
+        <div class="section-title">Teacher Details</div>
+        <div class="field"><label>Teacher Name</label><input id="teacherName" value="Md. Appel Mahmud Pranto"></div>
+        <div class="row2">
+          <div class="field"><label>Teacher Position</label><input id="teacherPosition" value="Lecturer"></div>
+          <div class="field"><label>Teacher Department</label><input id="teacherDepartment" value="Department of CSE and CSIT"></div>
+        </div>
+
+        <div class="row2">
+          <div class="field"><label>Submission Date</label><input id="submissionDate"></div>
+          <div class="field"><label>Logo</label><input id="logoInput" type="file" accept="image/*"></div>
+        </div>
+
+        <div class="btnbar">
+          <button class="primary" id="generateBtn">Generate & Download</button>
+          <button class="secondary" id="refreshBtn">Refresh Preview</button>
+          <button class="ghost" id="resetLogoBtn">Remove Logo</button>
+        </div>
+      </div>
+
+    </section>
+
+    <section class="workspace">
+      <div class="topbar">
+        <div class="title">
+          <h2>Live Preview</h2>
+          <p>Everything updates inside the page before you download it.</p>
+        </div>
+        <div class="sub" id="formatHint">Ready to export as PDF</div>
+      </div>
+
+      <div class="previewWrap">
+        <div class="paper" id="paper">
+          <div class="uni" id="uniName">Shanto-Mariam University of Creative Technology</div>
+          <div class="loc" id="uniLoc">Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230</div>
+          <div class="logoBox" id="logoBox">
+            <img id="logoPreview" alt="" style="display:none">
+          </div>
+          <div class="faculty" id="facultyText">Faculty of Engineering and Technology</div>
+          <div class="dept" id="deptText">Departments of CSE and CSIT</div>
+          <div class="mainTitle" id="mainTitle">ASSIGNMENT</div>
+          <div class="courseCard">
+            <div><strong>Course Title:</strong> <span id="pvCourseTitle">Digital Signal Processing</span></div>
+            <div><strong>Course Code:</strong> <span id="pvCourseCode">ICE-3108</span></div>
+            <div><strong>Topic:</strong> <span id="pvTopic">Sampling, Quantization and Encoding</span></div>
+          </div>
+
+          <div class="mid">
+            <div>
+              <div class="blockTitle">Submitted By</div>
+              <div class="info">
+                <div class="item"><span class="label">Name:</span> <span id="pvStudentName">Md. Khalid Hasan</span></div>
+                <div class="item"><span class="label">Student ID:</span> <span id="pvStudentId">24549010067</span></div>
+                <div class="item"><span class="label">Semester:</span> <span id="pvSemester">5th Semester</span></div>
+                <div class="item"><span class="label">Section:</span> <span id="pvSection">A</span></div>
+              </div>
+            </div>
+
+            <div>
+              <div class="blockTitle">Submitted To</div>
+              <div class="info">
+                <div class="item" id="pvTeacherName">Md. Appel Mahmud Pranto</div>
+                <div class="item" id="pvTeacherPosition">Lecturer</div>
+                <div class="item" id="pvTeacherDepartment">Department of CSE and CSIT</div>
+              </div>
+            </div>
+          </div>
+
+          <div class="sign">
+            <div class="date">Submission Date: <span id="pvDate"></span></div>
+            <div class="signature">
+              <div class="line"></div>
+              <div>Signature of Teacher</div>
+            </div>
+          </div>
+
+          <div class="footerSmall"></div>
+        </div>
+      </div>
+    </section>
+  </div>
+
+<script>
+  const el = id => document.getElementById(id);
+
+  const fields = [
+    ["courseTitle","pvCourseTitle"],
+    ["courseCode","pvCourseCode"],
+    ["topic","pvTopic"],
+    ["studentName","pvStudentName"],
+    ["studentId","pvStudentId"],
+    ["semester","pvSemester"],
+    ["section","pvSection"],
+    ["teacherName","pvTeacherName"],
+    ["teacherPosition","pvTeacherPosition"],
+    ["teacherDepartment","pvTeacherDepartment"],
+  ];
+
+  const logoInput = el("logoInput");
+  const logoPreview = el("logoPreview");
+  const outputType = el("outputType");
+  const formatHint = el("formatHint");
+  const mainTitle = el("mainTitle");
+  const submissionDate = el("submissionDate");
+
+  function today() {
+    const d = new Date();
+    return d.toLocaleDateString("en-GB");
+  }
+
+  function sync() {
+    el("uniName").textContent = "Shanto-Mariam University of Creative Technology";
+    el("uniLoc").textContent = "Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230";
+    el("facultyText").textContent = "Faculty of Engineering and Technology";
+    el("deptText").textContent = "Departments of CSE and CSIT";
+    mainTitle.textContent = (el("docType").value || "Assignment").toUpperCase();
+
+    fields.forEach(([src,dst]) => el(dst).textContent = el(src).value || "");
+    el("pvDate").textContent = submissionDate.value || today();
+    formatHint.textContent = outputType.value.toUpperCase() + " output selected";
+  }
+
+  function bind() {
+    [...document.querySelectorAll("input, select")].forEach(node => {
+      node.addEventListener("input", sync);
+      node.addEventListener("change", sync);
+    });
+  }
+
+  async function loadLogo(file) {
+    if (!file) {
+      logoPreview.style.display = "none";
+      logoPreview.removeAttribute("src");
+      sync();
+      return;
+    }
+    const dataUrl = await new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = reject;
+      reader.readAsDataURL(file);
+    });
+    logoPreview.src = dataUrl;
+    logoPreview.style.display = "block";
+    sync();
+  }
+
+  async function exportImage(type) {
+    sync();
+
+    const paper = el("paper");
+    const fileNameBase = (el("studentName").value || "front-page")
+      .replace(/[^\w\-]+/g, "_")
+      .toLowerCase();
+
+    const waitForFonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
+
+    const waitForLogo = () => {
+      if (!logoPreview.src || logoPreview.style.display === "none") return Promise.resolve();
+      if (logoPreview.complete && logoPreview.naturalWidth > 0) return Promise.resolve();
+      return new Promise(resolve => {
+        const done = () => resolve();
+        logoPreview.addEventListener("load", done, { once: true });
+        logoPreview.addEventListener("error", done, { once: true });
+      });
+    };
+
+    await waitForFonts;
+    await waitForLogo();
+
+    const clone = paper.cloneNode(true);
+    const wrapper = document.createElement("div");
+    wrapper.style.position = "fixed";
+    wrapper.style.left = "-10000px";
+    wrapper.style.top = "0";
+    wrapper.style.background = "#ffffff";
+    wrapper.style.pointerEvents = "none";
+    wrapper.style.zIndex = "-1";
+    wrapper.appendChild(clone);
+    document.body.appendChild(wrapper);
+
+    clone.style.transform = "none";
+    clone.style.width = "210mm";
+    clone.style.minHeight = "297mm";
+    clone.style.maxWidth = "none";
+    clone.style.margin = "0";
+    clone.style.boxShadow = "none";
+
+    const canvas = await html2canvas(clone, {
+      scale: Math.max(3, Math.ceil(window.devicePixelRatio || 1)),
+      backgroundColor: "#ffffff",
+      useCORS: true,
+      allowTaint: true,
+      logging: false,
+      imageTimeout: 0,
+      scrollX: 0,
+      scrollY: 0,
+      windowWidth: 794,
+      windowHeight: 1123
+    });
+
+    document.body.removeChild(wrapper);
+
+    if (type === "png") {
+      const link = document.createElement("a");
+      link.download = `${fileNameBase}.png`;
+      link.href = canvas.toDataURL("image/png");
+      link.click();
+      return;
+    }
+
+    const { jsPDF } = window.jspdf;
+    const pdf = new jsPDF({
+      orientation: "p",
+      unit: "mm",
+      format: "a4",
+      compress: false
+    });
+
+    const imgData = canvas.toDataURL("image/jpeg", 1.0);
+    pdf.addImage(imgData, "JPEG", 0, 0, 210, 297, undefined, "FAST");
+    pdf.save(`${fileNameBase}.pdf`);
+  }
+
+  el("generateBtn").addEventListener("click", async () => {
+    await exportImage(outputType.value);
+  });
+
+  el("refreshBtn").addEventListener("click", sync);
+  el("resetLogoBtn").addEventListener("click", () => {
+    logoInput.value = "";
+    logoPreview.style.display = "none";
+    logoPreview.removeAttribute("src");
+    sync();
+  });
+
+  logoInput.addEventListener("change", async () => {
+    const file = logoInput.files && logoInput.files[0];
+    await loadLogo(file);
+  });
+
+  outputType.addEventListener("change", sync);
+  el("docType").addEventListener("change", sync);
+
+  submissionDate.value = today();
+  bind();
+  sync();
+</script>
+</body>
+</html>
