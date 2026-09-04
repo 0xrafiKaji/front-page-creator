@@ -1051,8 +1051,8 @@
               <label for="outputType">Output Format</label>
               <select id="outputType">
                 <option value="pdf">PDF Document (.pdf)</option>
-                <option value="docx">Word Document (.docx) - Universal</option>
-                <option value="doc">Word Document (.doc) - Legacy</option>
+                <option value="docx">Word Document (.docx) - Word &amp; Google Docs</option>
+                <option value="doc">Word Document (.doc)</option>
                 <option value="png">PNG Image (.png)</option>
               </select>
             </div>
@@ -1521,8 +1521,8 @@
       if (formatHint) {
         const hintMap = {
           pdf: "PDF Ready (Universal Print)",
-          docx: "DOCX Ready (Word, Google Docs, Mobile)",
-          doc: "DOC Ready (Legacy MS Word 97-2003)",
+          docx: "DOCX Ready (Full Word & Google Docs Support)",
+          doc: "Word Ready (Full Word & Google Docs Support)",
           png: "PNG Ready (High Resolution Image)"
         };
         formatHint.textContent = hintMap[outputType.value] || `${(outputType.value || "PDF").toUpperCase()} Ready`;
@@ -1571,48 +1571,57 @@
       const BORDER_COLOR = "CBD5E1";
       const BG_LIGHT = "F8FAFC";
 
-      const children = [
+      const frameW = 10100;
+      const innerW = 9800;
+      const col1W = 2500;
+      const col2W = 7300;
+      const subBoxW = 4650;
+      const spacerW = 500;
+      const footerLeftW = 5800;
+      const footerRightW = 4000;
+
+      const innerChildren = [
         // 1. University Header
         new docxLib.Paragraph({
           alignment: docxLib.AlignmentType.CENTER,
-          spacing: { before: 0, after: 30 },
+          spacing: { before: 0, after: 20 },
           children: [
             new docxLib.TextRun({
               text: "SHANTO-MARIAM UNIVERSITY OF CREATIVE TECHNOLOGY",
               font: "Cinzel",
               bold: true,
-              size: 28, // 14pt
+              size: 26, // 13pt
               color: GREEN,
             }),
           ],
         }),
         new docxLib.Paragraph({
           alignment: docxLib.AlignmentType.CENTER,
-          spacing: { before: 0, after: 40 },
+          spacing: { before: 0, after: 30 },
           children: [
             new docxLib.TextRun({
               text: "Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230",
               font: "Arial",
-              size: 17, // 8.5pt
+              size: 16, // 8pt
               color: MUTED,
             }),
           ],
         }),
       ];
 
-      // Logo (with explicit type: "png" to avoid OpenXML corruption)
+      // Logo (with explicit type: "png" to ensure Google Docs & Word Mobile load it cleanly)
       if (logoBytes) {
-        children.push(
+        innerChildren.push(
           new docxLib.Paragraph({
             alignment: docxLib.AlignmentType.CENTER,
-            spacing: { before: 0, after: 40 },
+            spacing: { before: 0, after: 30 },
             children: [
               new docxLib.ImageRun({
                 data: logoBytes,
                 type: "png",
                 transformation: {
-                  width: 105,
-                  height: 105,
+                  width: 95,
+                  height: 95,
                 },
               }),
             ],
@@ -1621,59 +1630,57 @@
       }
 
       // Faculty & Department
-      children.push(
+      innerChildren.push(
         new docxLib.Paragraph({
           alignment: docxLib.AlignmentType.CENTER,
-          spacing: { before: 0, after: 15 },
+          spacing: { before: 0, after: 10 },
           children: [
             new docxLib.TextRun({
               text: "Faculty of Engineering and Technology",
               font: "Times New Roman",
               bold: true,
-              size: 23, // 11.5pt
+              size: 22, // 11pt
               color: SLATE,
             }),
           ],
         }),
         new docxLib.Paragraph({
           alignment: docxLib.AlignmentType.CENTER,
-          spacing: { before: 0, after: 70 },
+          spacing: { before: 0, after: 50 },
           children: [
             new docxLib.TextRun({
               text: "Departments of CSE and CSIT",
               font: "Times New Roman",
               bold: true,
-              size: 21, // 10.5pt
+              size: 20, // 10pt
               color: GREEN,
             }),
           ],
         }),
 
-        // 2. Banner: Paragraph with top and bottom double border (clean & supported everywhere)
+        // 2. Banner
         new docxLib.Paragraph({
           alignment: docxLib.AlignmentType.CENTER,
-          spacing: { before: 70, after: 70 },
+          spacing: { before: 50, after: 50 },
           border: {
-            top: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 6 },
-            bottom: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 6 },
+            top: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 5 },
+            bottom: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 5 },
           },
           children: [
             new docxLib.TextRun({
               text: (data.docType || "ASSIGNMENT").toUpperCase(),
               font: "Cinzel",
               bold: true,
-              size: 32, // 16pt
+              size: 30, // 15pt
               color: GREEN,
             }),
           ],
         }),
 
-        new docxLib.Paragraph({ spacing: { before: 60, after: 0 } })
+        new docxLib.Paragraph({ spacing: { before: 50, after: 0 } })
       );
 
-      // 3. Course Details Card: Clean single-level table with exact DXA widths (no nested table bugs)
-      const col1W = 2600;
-      const col2W = 7490;
+      // 3. Course Details Table with explicit columnWidths so Google Docs renders at full width
       const courseRows = [
         { label: "Course Title:", val: data.courseTitle || "" },
         { label: "Course Code:", val: data.courseCode || "" },
@@ -1681,10 +1688,11 @@
         { label: "Experiment Title:", val: data.experimentTitle || "" },
       ];
 
-      children.push(
+      innerChildren.push(
         new docxLib.Table({
           alignment: docxLib.AlignmentType.CENTER,
-          width: { size: col1W + col2W, type: docxLib.WidthType.DXA },
+          width: { size: innerW, type: docxLib.WidthType.DXA },
+          columnWidths: [col1W, col2W],
           borders: {
             top: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
             bottom: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
@@ -1699,7 +1707,7 @@
                 new docxLib.TableCell({
                   width: { size: col1W, type: docxLib.WidthType.DXA },
                   shading: { fill: BG_LIGHT },
-                  margins: { top: 55, bottom: 55, left: 140, right: 60 },
+                  margins: { top: 45, bottom: 45, left: 120, right: 50 },
                   children: [
                     new docxLib.Paragraph({
                       spacing: { before: 0, after: 0 },
@@ -1708,7 +1716,7 @@
                           text: r.label,
                           font: "Arial",
                           bold: true,
-                          size: 20, // 10pt
+                          size: 19,
                           color: SLATE,
                         }),
                       ],
@@ -1718,7 +1726,7 @@
                 new docxLib.TableCell({
                   width: { size: col2W, type: docxLib.WidthType.DXA },
                   shading: { fill: BG_LIGHT },
-                  margins: { top: 55, bottom: 55, left: 60, right: 140 },
+                  margins: { top: 45, bottom: 45, left: 50, right: 120 },
                   children: [
                     new docxLib.Paragraph({
                       spacing: { before: 0, after: 0 },
@@ -1727,7 +1735,7 @@
                           text: r.val,
                           font: "Arial",
                           bold: true,
-                          size: 20, // 10pt
+                          size: 19,
                           color: "0F172A",
                         }),
                       ],
@@ -1738,17 +1746,15 @@
             });
           }),
         }),
-        new docxLib.Paragraph({ spacing: { before: 80, after: 0 } })
+        new docxLib.Paragraph({ spacing: { before: 70, after: 0 } })
       );
 
-      // 4. Submission Grid (Student Details & Teacher Details)
-      const subBoxW = 4800;
-      const spacerW = 490;
-
-      children.push(
+      // 4. Submission Grid (Student Details & Teacher Details) with explicit columnWidths
+      innerChildren.push(
         new docxLib.Table({
           alignment: docxLib.AlignmentType.CENTER,
-          width: { size: subBoxW * 2 + spacerW, type: docxLib.WidthType.DXA },
+          width: { size: innerW, type: docxLib.WidthType.DXA },
+          columnWidths: [subBoxW, spacerW, subBoxW],
           borders: {
             top: { style: docxLib.BorderStyle.NONE },
             bottom: { style: docxLib.BorderStyle.NONE },
@@ -1769,41 +1775,41 @@
                     left: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
                     right: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
                   },
-                  margins: { top: 80, bottom: 80, left: 110, right: 110 },
+                  margins: { top: 60, bottom: 60, left: 90, right: 90 },
                   children: [
                     new docxLib.Paragraph({
-                      spacing: { before: 0, after: 50 },
+                      spacing: { before: 0, after: 40 },
                       border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: GREEN, space: 4 } },
                       children: [
-                        new docxLib.TextRun({ text: "SUBMITTED BY", font: "Cinzel", bold: true, size: 21, color: GREEN }),
+                        new docxLib.TextRun({ text: "SUBMITTED BY", font: "Cinzel", bold: true, size: 20, color: GREEN }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 18, after: 14 },
+                      spacing: { before: 12, after: 10 },
                       children: [
-                        new docxLib.TextRun({ text: "Name: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.studentName || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "Name: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.studentName || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 14, after: 14 },
+                      spacing: { before: 10, after: 10 },
                       children: [
-                        new docxLib.TextRun({ text: "ID: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.studentId || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "ID: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.studentId || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 14, after: 14 },
+                      spacing: { before: 10, after: 10 },
                       children: [
-                        new docxLib.TextRun({ text: "Semester: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.semester || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "Semester: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.semester || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 14, after: 0 },
+                      spacing: { before: 10, after: 0 },
                       children: [
-                        new docxLib.TextRun({ text: "Section: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.section || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "Section: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.section || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                   ],
@@ -1830,34 +1836,34 @@
                     left: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
                     right: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
                   },
-                  margins: { top: 80, bottom: 80, left: 110, right: 110 },
+                  margins: { top: 60, bottom: 60, left: 90, right: 90 },
                   children: [
                     new docxLib.Paragraph({
-                      spacing: { before: 0, after: 50 },
+                      spacing: { before: 0, after: 40 },
                       border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: GREEN, space: 4 } },
                       children: [
-                        new docxLib.TextRun({ text: "SUBMITTED TO", font: "Cinzel", bold: true, size: 21, color: GREEN }),
+                        new docxLib.TextRun({ text: "SUBMITTED TO", font: "Cinzel", bold: true, size: 20, color: GREEN }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 18, after: 14 },
+                      spacing: { before: 12, after: 10 },
                       children: [
-                        new docxLib.TextRun({ text: "Name: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.teacherName || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "Name: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.teacherName || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 14, after: 14 },
+                      spacing: { before: 10, after: 10 },
                       children: [
-                        new docxLib.TextRun({ text: "Designation: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.teacherPosition || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "Designation: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.teacherPosition || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 14, after: 0 },
+                      spacing: { before: 10, after: 0 },
                       children: [
-                        new docxLib.TextRun({ text: "Department: ", font: "Arial", bold: true, size: 19, color: MUTED }),
-                        new docxLib.TextRun({ text: data.teacherDepartment || "", font: "Arial", bold: true, size: 19, color: SLATE }),
+                        new docxLib.TextRun({ text: "Department: ", font: "Arial", bold: true, size: 18, color: MUTED }),
+                        new docxLib.TextRun({ text: data.teacherDepartment || "", font: "Arial", bold: true, size: 18, color: SLATE }),
                       ],
                     }),
                   ],
@@ -1866,17 +1872,15 @@
             }),
           ],
         }),
-        new docxLib.Paragraph({ spacing: { before: 80, after: 0 } })
+        new docxLib.Paragraph({ spacing: { before: 70, after: 0 } })
       );
 
-      // 5. Bottom Dates and Signature Table
-      const footerLeftW = 6000;
-      const footerRightW = 4090;
-
-      children.push(
+      // 5. Bottom Dates and Signature Table with explicit columnWidths
+      innerChildren.push(
         new docxLib.Table({
           alignment: docxLib.AlignmentType.CENTER,
-          width: { size: footerLeftW + footerRightW, type: docxLib.WidthType.DXA },
+          width: { size: innerW, type: docxLib.WidthType.DXA },
+          columnWidths: [footerLeftW, footerRightW],
           borders: {
             top: { style: docxLib.BorderStyle.SINGLE, size: 6, color: BORDER_COLOR },
             bottom: { style: docxLib.BorderStyle.NONE },
@@ -1890,38 +1894,38 @@
               children: [
                 new docxLib.TableCell({
                   width: { size: footerLeftW, type: docxLib.WidthType.DXA },
-                  margins: { top: 80, bottom: 20, left: 30, right: 30 },
+                  margins: { top: 60, bottom: 10, left: 20, right: 20 },
                   children: [
                     new docxLib.Paragraph({
-                      spacing: { before: 0, after: 18 },
+                      spacing: { before: 0, after: 14 },
                       children: [
-                        new docxLib.TextRun({ text: "Date of Experiment: ", font: "Arial", bold: true, size: 19, color: SLATE }),
-                        new docxLib.TextRun({ text: data.experimentDate || "", font: "Arial", bold: true, size: 19 }),
+                        new docxLib.TextRun({ text: "Date of Experiment: ", font: "Arial", bold: true, size: 18, color: SLATE }),
+                        new docxLib.TextRun({ text: data.experimentDate || "", font: "Arial", bold: true, size: 18 }),
                       ],
                     }),
                     new docxLib.Paragraph({
-                      spacing: { before: 18, after: 0 },
+                      spacing: { before: 14, after: 0 },
                       children: [
-                        new docxLib.TextRun({ text: "Date of Submission: ", font: "Arial", bold: true, size: 19, color: SLATE }),
-                        new docxLib.TextRun({ text: data.submissionDate || "", font: "Arial", bold: true, size: 19 }),
+                        new docxLib.TextRun({ text: "Date of Submission: ", font: "Arial", bold: true, size: 18, color: SLATE }),
+                        new docxLib.TextRun({ text: data.submissionDate || "", font: "Arial", bold: true, size: 18 }),
                       ],
                     }),
                   ],
                 }),
                 new docxLib.TableCell({
                   width: { size: footerRightW, type: docxLib.WidthType.DXA },
-                  margins: { top: 80, bottom: 20, left: 30, right: 30 },
+                  margins: { top: 60, bottom: 10, left: 20, right: 20 },
                   verticalAlign: docxLib.VerticalAlign.BOTTOM,
                   children: [
                     new docxLib.Paragraph({
                       alignment: docxLib.AlignmentType.CENTER,
-                      spacing: { before: 15, after: 15 },
+                      spacing: { before: 10, after: 10 },
                       children: [
                         new docxLib.TextRun({
                           text: "____________________________________",
                           font: "Arial",
                           bold: true,
-                          size: 16,
+                          size: 15,
                           color: SLATE,
                         }),
                       ],
@@ -1929,7 +1933,7 @@
                     new docxLib.Paragraph({
                       alignment: docxLib.AlignmentType.CENTER,
                       children: [
-                        new docxLib.TextRun({ text: "Teacher's Signature", font: "Arial", bold: true, size: 17, color: MUTED }),
+                        new docxLib.TextRun({ text: "Teacher's Signature", font: "Arial", bold: true, size: 16, color: MUTED }),
                       ],
                     }),
                   ],
@@ -1939,6 +1943,33 @@
           ],
         })
       );
+
+      // Outer Frame Table: Renderable by Google Docs, Word Mobile, and Desktop Word
+      const outerFrame = new docxLib.Table({
+        alignment: docxLib.AlignmentType.CENTER,
+        width: { size: frameW, type: docxLib.WidthType.DXA },
+        columnWidths: [frameW],
+        borders: {
+          top: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+          bottom: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+          left: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+          right: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+          insideHorizontal: { style: docxLib.BorderStyle.NONE },
+          insideVertical: { style: docxLib.BorderStyle.NONE },
+        },
+        rows: [
+          new docxLib.TableRow({
+            height: { value: 14600, rule: docxLib.HeightRule.ATLEAST },
+            children: [
+              new docxLib.TableCell({
+                width: { size: frameW, type: docxLib.WidthType.DXA },
+                margins: { top: 120, bottom: 120, left: 120, right: 120 },
+                children: innerChildren,
+              }),
+            ],
+          }),
+        ],
+      });
 
       return new docxLib.Document({
         styles: {
@@ -1961,23 +1992,12 @@
               margin: {
                 top: docxLib.convertMillimetersToTwip(12),
                 bottom: docxLib.convertMillimetersToTwip(12),
-                left: docxLib.convertMillimetersToTwip(14),
-                right: docxLib.convertMillimetersToTwip(14),
-              },
-              borders: {
-                pageBorders: {
-                  display: docxLib.PageBorderDisplay.ALL_PAGES,
-                  offsetFrom: docxLib.PageBorderOffsetFrom.PAGE,
-                  zOrder: docxLib.PageBorderZOrder.FRONT,
-                },
-                pageBorderTop: { style: docxLib.BorderStyle.DOUBLE, size: 18, color: GREEN, space: 16 },
-                pageBorderBottom: { style: docxLib.BorderStyle.DOUBLE, size: 18, color: GREEN, space: 16 },
-                pageBorderLeft: { style: docxLib.BorderStyle.DOUBLE, size: 18, color: GREEN, space: 16 },
-                pageBorderRight: { style: docxLib.BorderStyle.DOUBLE, size: 18, color: GREEN, space: 16 },
+                left: docxLib.convertMillimetersToTwip(12),
+                right: docxLib.convertMillimetersToTwip(12),
               },
             },
           },
-          children: children,
+          children: [outerFrame],
         }],
       });
     }
@@ -2264,15 +2284,9 @@ body {
           submissionDate: el("submissionDate").value.trim(),
         };
 
-        if (type === "docx") {
-          generateBtnText.textContent = "Generating DOCX...";
+        if (type === "docx" || type === "doc") {
+          generateBtnText.textContent = "Generating Word Document...";
           await exportDocx(baseName, formData);
-          return;
-        }
-
-        if (type === "doc") {
-          generateBtnText.textContent = "Generating DOC...";
-          exportDoc(baseName, formData);
           return;
         }
 
