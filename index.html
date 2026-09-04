@@ -22,6 +22,7 @@
   <!-- Libraries -->
   <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js"></script>
 
   <style>
     :root {
@@ -1049,8 +1050,10 @@
             <div class="field">
               <label for="outputType">Output Format</label>
               <select id="outputType">
-                <option value="pdf">PDF Document</option>
-                <option value="png">PNG Image</option>
+                <option value="pdf">PDF Document (.pdf)</option>
+                <option value="docx">Word Document (.docx)</option>
+                <option value="doc">Word Document (.doc)</option>
+                <option value="png">PNG Image (.png)</option>
               </select>
             </div>
           </div>
@@ -1516,8 +1519,689 @@
 
       // Output hint
       if (formatHint) {
-        formatHint.textContent = `${(outputType.value || "PDF").toUpperCase()} Ready`;
+        const hintMap = {
+          pdf: "PDF Ready",
+          docx: "DOCX Ready",
+          doc: "DOC Ready",
+          png: "PNG Ready"
+        };
+        formatHint.textContent = hintMap[outputType.value] || `${(outputType.value || "PDF").toUpperCase()} Ready`;
       }
+    }
+
+    function escapeHtml(str) {
+      if (!str) return "";
+      return String(str)
+        .replace(/&/g, "&amp;")
+        .replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;")
+        .replace(/"/g, "&quot;")
+        .replace(/'/g, "&#039;");
+    }
+
+    async function getLogoBytes() {
+      if (logoPreview && logoPreview.src && logoPreview.src.startsWith("data:image/")) {
+        const base64Part = logoPreview.src.split(",")[1];
+        if (base64Part) {
+          const binaryString = atob(base64Part);
+          const bytes = new Uint8Array(binaryString.length);
+          for (let i = 0; i < binaryString.length; i++) {
+            bytes[i] = binaryString.charCodeAt(i);
+          }
+          return bytes;
+        }
+      }
+      try {
+        const response = await fetch("./logo.png");
+        const arrayBuffer = await response.arrayBuffer();
+        return new Uint8Array(arrayBuffer);
+      } catch (e) {
+        console.warn("Could not fetch logo.png directly:", e);
+        return null;
+      }
+    }
+
+    function createDocxDocument(data, logoBytes) {
+      const docxLib = window.docx;
+      if (!docxLib) throw new Error("docx library is not loaded");
+
+      const GREEN = "0B4A2C";
+      const SLATE = "1E293B";
+      const MUTED = "475467";
+      const BORDER_COLOR = "CBD5E1";
+      const BG_LIGHT = "F8FAFC";
+
+      const content = [
+        // 1. University Header
+        new docxLib.Paragraph({
+          alignment: docxLib.AlignmentType.CENTER,
+          spacing: { before: 0, after: 40 },
+          children: [
+            new docxLib.TextRun({
+              text: "SHANTO-MARIAM UNIVERSITY OF CREATIVE TECHNOLOGY",
+              font: "Cinzel",
+              bold: true,
+              size: 30, // 15pt
+              color: GREEN,
+            }),
+          ],
+        }),
+        new docxLib.Paragraph({
+          alignment: docxLib.AlignmentType.CENTER,
+          spacing: { before: 0, after: 60 },
+          children: [
+            new docxLib.TextRun({
+              text: "Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230",
+              font: "Arial",
+              size: 18, // 9pt
+              color: MUTED,
+            }),
+          ],
+        }),
+      ];
+
+      // Embedded Logo
+      if (logoBytes) {
+        content.push(
+          new docxLib.Paragraph({
+            alignment: docxLib.AlignmentType.CENTER,
+            spacing: { before: 0, after: 60 },
+            children: [
+              new docxLib.ImageRun({
+                data: logoBytes,
+                transformation: {
+                  width: 115,
+                  height: 115,
+                },
+              }),
+            ],
+          })
+        );
+      }
+
+      // Faculty & Department
+      content.push(
+        new docxLib.Paragraph({
+          alignment: docxLib.AlignmentType.CENTER,
+          spacing: { before: 0, after: 20 },
+          children: [
+            new docxLib.TextRun({
+              text: "Faculty of Engineering and Technology",
+              bold: true,
+              size: 23, // 11.5pt
+              color: SLATE,
+            }),
+          ],
+        }),
+        new docxLib.Paragraph({
+          alignment: docxLib.AlignmentType.CENTER,
+          spacing: { before: 0, after: 100 },
+          children: [
+            new docxLib.TextRun({
+              text: "Departments of CSE and CSIT",
+              bold: true,
+              size: 21, // 10.5pt
+              color: GREEN,
+            }),
+          ],
+        }),
+
+        // Document Type Banner
+        new docxLib.Table({
+          alignment: docxLib.AlignmentType.CENTER,
+          width: { size: 100, type: docxLib.WidthType.PERCENTAGE },
+          borders: {
+            top: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN },
+            bottom: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN },
+            left: { style: docxLib.BorderStyle.NONE },
+            right: { style: docxLib.BorderStyle.NONE },
+            insideHorizontal: { style: docxLib.BorderStyle.NONE },
+            insideVertical: { style: docxLib.BorderStyle.NONE },
+          },
+          rows: [
+            new docxLib.TableRow({
+              children: [
+                new docxLib.TableCell({
+                  margins: { top: 70, bottom: 70, left: 60, right: 60 },
+                  children: [
+                    new docxLib.Paragraph({
+                      alignment: docxLib.AlignmentType.CENTER,
+                      children: [
+                        new docxLib.TextRun({
+                          text: (data.docType || "ASSIGNMENT").toUpperCase(),
+                          bold: true,
+                          size: 34, // 17pt
+                          color: GREEN,
+                          font: "Cinzel",
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+
+        new docxLib.Paragraph({ spacing: { before: 90, after: 0 } }),
+
+        // Course & Experiment Card
+        new docxLib.Table({
+          alignment: docxLib.AlignmentType.CENTER,
+          width: { size: 100, type: docxLib.WidthType.PERCENTAGE },
+          borders: {
+            top: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+            bottom: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+            left: { style: docxLib.BorderStyle.SINGLE, size: 24, color: GREEN },
+            right: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+            insideHorizontal: { style: docxLib.BorderStyle.NONE },
+            insideVertical: { style: docxLib.BorderStyle.NONE },
+          },
+          rows: [
+            new docxLib.TableRow({
+              children: [
+                new docxLib.TableCell({
+                  shading: { fill: BG_LIGHT },
+                  margins: { top: 80, bottom: 80, left: 120, right: 120 },
+                  children: [
+                    new docxLib.Table({
+                      width: { size: 100, type: docxLib.WidthType.PERCENTAGE },
+                      borders: {
+                        top: { style: docxLib.BorderStyle.NONE },
+                        bottom: { style: docxLib.BorderStyle.NONE },
+                        left: { style: docxLib.BorderStyle.NONE },
+                        right: { style: docxLib.BorderStyle.NONE },
+                        insideHorizontal: { style: docxLib.BorderStyle.NONE },
+                        insideVertical: { style: docxLib.BorderStyle.NONE },
+                      },
+                      rows: [
+                        new docxLib.TableRow({
+                          children: [
+                            new docxLib.TableCell({
+                              width: { size: 26, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: "Course Title:", bold: true, size: 21, color: SLATE })] })],
+                            }),
+                            new docxLib.TableCell({
+                              width: { size: 74, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: data.courseTitle || "", size: 21, bold: true })] })],
+                            }),
+                          ],
+                        }),
+                        new docxLib.TableRow({
+                          children: [
+                            new docxLib.TableCell({
+                              width: { size: 26, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: "Course Code:", bold: true, size: 21, color: SLATE })] })],
+                            }),
+                            new docxLib.TableCell({
+                              width: { size: 74, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: data.courseCode || "", size: 21, bold: true })] })],
+                            }),
+                          ],
+                        }),
+                        new docxLib.TableRow({
+                          children: [
+                            new docxLib.TableCell({
+                              width: { size: 26, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: "Experiment No.:", bold: true, size: 21, color: SLATE })] })],
+                            }),
+                            new docxLib.TableCell({
+                              width: { size: 74, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: data.experimentNo || "", size: 21, bold: true })] })],
+                            }),
+                          ],
+                        }),
+                        new docxLib.TableRow({
+                          children: [
+                            new docxLib.TableCell({
+                              width: { size: 26, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: "Experiment Title:", bold: true, size: 21, color: SLATE })] })],
+                            }),
+                            new docxLib.TableCell({
+                              width: { size: 74, type: docxLib.WidthType.PERCENTAGE },
+                              children: [new docxLib.Paragraph({ spacing: { before: 15, after: 15 }, children: [new docxLib.TextRun({ text: data.experimentTitle || "", size: 21, bold: true })] })],
+                            }),
+                          ],
+                        }),
+                      ],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+
+        new docxLib.Paragraph({ spacing: { before: 100, after: 0 } }),
+
+        // Submitted By / To Table
+        new docxLib.Table({
+          alignment: docxLib.AlignmentType.CENTER,
+          width: { size: 100, type: docxLib.WidthType.PERCENTAGE },
+          borders: {
+            top: { style: docxLib.BorderStyle.NONE },
+            bottom: { style: docxLib.BorderStyle.NONE },
+            left: { style: docxLib.BorderStyle.NONE },
+            right: { style: docxLib.BorderStyle.NONE },
+            insideHorizontal: { style: docxLib.BorderStyle.NONE },
+            insideVertical: { style: docxLib.BorderStyle.NONE },
+          },
+          rows: [
+            new docxLib.TableRow({
+              children: [
+                new docxLib.TableCell({
+                  width: { size: 48, type: docxLib.WidthType.PERCENTAGE },
+                  borders: {
+                    top: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                    bottom: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                    left: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                    right: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                  },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new docxLib.Paragraph({
+                      spacing: { before: 0, after: 50 },
+                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: GREEN } },
+                      children: [new docxLib.TextRun({ text: "SUBMITTED BY", bold: true, size: 21, color: GREEN, font: "Cinzel" })],
+                    }),
+                    new docxLib.Paragraph({ spacing: { before: 25, after: 18 }, children: [new docxLib.TextRun({ text: "Name: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.studentName || "", bold: true, size: 19, color: SLATE })] }),
+                    new docxLib.Paragraph({ spacing: { before: 18, after: 18 }, children: [new docxLib.TextRun({ text: "ID: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.studentId || "", bold: true, size: 19, color: SLATE })] }),
+                    new docxLib.Paragraph({ spacing: { before: 18, after: 18 }, children: [new docxLib.TextRun({ text: "Semester: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.semester || "", bold: true, size: 19, color: SLATE })] }),
+                    new docxLib.Paragraph({ spacing: { before: 18, after: 0 }, children: [new docxLib.TextRun({ text: "Section: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.section || "", bold: true, size: 19, color: SLATE })] }),
+                  ],
+                }),
+
+                new docxLib.TableCell({
+                  width: { size: 4, type: docxLib.WidthType.PERCENTAGE },
+                  borders: { top: { style: docxLib.BorderStyle.NONE }, bottom: { style: docxLib.BorderStyle.NONE }, left: { style: docxLib.BorderStyle.NONE }, right: { style: docxLib.BorderStyle.NONE } },
+                  children: [new docxLib.Paragraph({})],
+                }),
+
+                new docxLib.TableCell({
+                  width: { size: 48, type: docxLib.WidthType.PERCENTAGE },
+                  borders: {
+                    top: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                    bottom: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                    left: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                    right: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
+                  },
+                  margins: { top: 80, bottom: 80, left: 100, right: 100 },
+                  children: [
+                    new docxLib.Paragraph({
+                      spacing: { before: 0, after: 50 },
+                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: GREEN } },
+                      children: [new docxLib.TextRun({ text: "SUBMITTED TO", bold: true, size: 21, color: GREEN, font: "Cinzel" })],
+                    }),
+                    new docxLib.Paragraph({ spacing: { before: 25, after: 18 }, children: [new docxLib.TextRun({ text: "Name: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.teacherName || "", bold: true, size: 19, color: SLATE })] }),
+                    new docxLib.Paragraph({ spacing: { before: 18, after: 18 }, children: [new docxLib.TextRun({ text: "Designation: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.teacherPosition || "", bold: true, size: 19, color: SLATE })] }),
+                    new docxLib.Paragraph({ spacing: { before: 18, after: 0 }, children: [new docxLib.TextRun({ text: "Department: ", bold: true, size: 19, color: MUTED }), new docxLib.TextRun({ text: data.teacherDepartment || "", bold: true, size: 19, color: SLATE })] }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }),
+
+        new docxLib.Paragraph({ spacing: { before: 100, after: 0 } }),
+
+        // Dates and Signature
+        new docxLib.Table({
+          alignment: docxLib.AlignmentType.CENTER,
+          width: { size: 100, type: docxLib.WidthType.PERCENTAGE },
+          borders: {
+            top: { style: docxLib.BorderStyle.SINGLE, size: 6, color: BORDER_COLOR },
+            bottom: { style: docxLib.BorderStyle.NONE },
+            left: { style: docxLib.BorderStyle.NONE },
+            right: { style: docxLib.BorderStyle.NONE },
+            insideHorizontal: { style: docxLib.BorderStyle.NONE },
+            insideVertical: { style: docxLib.BorderStyle.NONE },
+          },
+          rows: [
+            new docxLib.TableRow({
+              children: [
+                new docxLib.TableCell({
+                  width: { size: 60, type: docxLib.WidthType.PERCENTAGE },
+                  margins: { top: 80, bottom: 20, left: 30, right: 30 },
+                  children: [
+                    new docxLib.Paragraph({ spacing: { before: 0, after: 20 }, children: [new docxLib.TextRun({ text: "Date of Experiment: ", bold: true, size: 19, color: SLATE }), new docxLib.TextRun({ text: data.experimentDate || "", bold: true, size: 19 })] }),
+                    new docxLib.Paragraph({ spacing: { before: 20, after: 0 }, children: [new docxLib.TextRun({ text: "Date of Submission: ", bold: true, size: 19, color: SLATE }), new docxLib.TextRun({ text: data.submissionDate || "", bold: true, size: 19 })] }),
+                  ],
+                }),
+                new docxLib.TableCell({
+                  width: { size: 40, type: docxLib.WidthType.PERCENTAGE },
+                  margins: { top: 80, bottom: 20, left: 30, right: 30 },
+                  verticalAlign: docxLib.VerticalAlign.BOTTOM,
+                  children: [
+                    new docxLib.Paragraph({
+                      alignment: docxLib.AlignmentType.CENTER,
+                      spacing: { before: 20, after: 25 },
+                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 6, color: SLATE } },
+                      children: [],
+                    }),
+                    new docxLib.Paragraph({
+                      alignment: docxLib.AlignmentType.CENTER,
+                      children: [new docxLib.TextRun({ text: "Teacher's Signature", bold: true, size: 17, color: MUTED })],
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        })
+      );
+
+      return new docxLib.Document({
+        styles: {
+          default: {
+            document: {
+              run: {
+                font: "Georgia",
+                color: "0F172A",
+              },
+            },
+          },
+        },
+        sections: [{
+          properties: {
+            page: {
+              size: {
+                width: docxLib.convertMillimetersToTwip(210),
+                height: docxLib.convertMillimetersToTwip(297),
+              },
+              margin: {
+                top: docxLib.convertMillimetersToTwip(8),
+                bottom: docxLib.convertMillimetersToTwip(8),
+                left: docxLib.convertMillimetersToTwip(8),
+                right: docxLib.convertMillimetersToTwip(8),
+              },
+              pageBorders: {
+                offsetFrom: docxLib.PageBorderOffsetFrom.PAGE,
+                display: docxLib.PageBorderDisplay.ALL_PAGES,
+                zOrder: docxLib.PageBorderZOrder.FRONT,
+                top: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 16 },
+                bottom: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 16 },
+                left: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 16 },
+                right: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 16 },
+              },
+            },
+          },
+          children: [
+            new docxLib.Table({
+              alignment: docxLib.AlignmentType.CENTER,
+              width: { size: 100, type: docxLib.WidthType.PERCENTAGE },
+              borders: {
+                top: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+                bottom: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+                left: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+                right: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
+                insideHorizontal: { style: docxLib.BorderStyle.NONE },
+                insideVertical: { style: docxLib.BorderStyle.NONE },
+              },
+              rows: [
+                new docxLib.TableRow({
+                  children: [
+                    new docxLib.TableCell({
+                      margins: { top: 140, bottom: 140, left: 160, right: 160 },
+                      children: content,
+                    }),
+                  ],
+                }),
+              ],
+            }),
+          ],
+        }],
+      });
+    }
+
+    async function exportDocx(baseName, data) {
+      if (!window.docx) {
+        throw new Error("Word generation library is still loading or unavailable. Please check your internet connection.");
+      }
+      const logoBytes = await getLogoBytes();
+      const doc = createDocxDocument(data, logoBytes);
+      const blob = await window.docx.Packer.toBlob(doc);
+      const link = document.createElement("a");
+      link.download = `${baseName}_cover.docx`;
+      link.href = URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
+    }
+
+    function exportDoc(baseName, data) {
+      const logoSrc = logoPreview && logoPreview.src ? logoPreview.src : "./logo.png";
+      const htmlContent = `<!DOCTYPE html>
+<html xmlns:o="urn:schemas-microsoft-com:office:office" 
+      xmlns:w="urn:schemas-microsoft-com:office:word" 
+      xmlns="http://www.w3.org/TR/REC-html40">
+<head>
+  <meta charset="utf-8">
+  <title>Cover Page</title>
+  <!--[if gte mso 9]>
+  <xml>
+    <w:WordDocument>
+      <w:View>Print</w:View>
+      <w:Zoom>100</w:Zoom>
+      <w:DoNotOptimizeForBrowser/>
+    </w:WordDocument>
+  </xml>
+  <![endif]-->
+  <style>
+    @page Section1 {
+      size: 210mm 297mm;
+      margin: 10mm 12mm 10mm 12mm;
+      mso-header-margin: 36pt;
+      mso-footer-margin: 36pt;
+    }
+    div.Section1 { page: Section1; }
+    body {
+      font-family: "Times New Roman", Georgia, serif;
+      color: #0f172a;
+      background: #ffffff;
+      margin: 0;
+      padding: 0;
+    }
+    .frame-table {
+      width: 100%;
+      border: 4px double #0b4a2c;
+      padding: 16px 20px;
+    }
+    .uni-title {
+      font-size: 17pt;
+      font-weight: bold;
+      color: #0b4a2c;
+      text-align: center;
+      margin: 0;
+      letter-spacing: 0.5px;
+    }
+    .uni-loc {
+      font-size: 9.5pt;
+      color: #475467;
+      text-align: center;
+      margin: 3px 0 6px;
+    }
+    .logo-td {
+      text-align: center;
+      padding: 6px 0;
+    }
+    .uni-faculty {
+      font-size: 12pt;
+      font-weight: bold;
+      color: #1e293b;
+      text-align: center;
+      margin: 2px 0;
+    }
+    .uni-dept {
+      font-size: 11pt;
+      font-weight: bold;
+      color: #0b4a2c;
+      text-align: center;
+      margin: 2px 0 10px;
+    }
+    .banner-table {
+      width: 100%;
+      border-top: 3px double #0b4a2c;
+      border-bottom: 3px double #0b4a2c;
+      margin: 10px 0;
+    }
+    .banner-text {
+      font-size: 18pt;
+      font-weight: bold;
+      color: #0b4a2c;
+      text-align: center;
+      padding: 6px 0;
+      letter-spacing: 2px;
+    }
+    .course-table {
+      width: 100%;
+      background-color: #f8fafc;
+      border: 1px solid #cbd5e1;
+      border-left: 5px solid #0b4a2c;
+      margin: 12px 0;
+    }
+    .course-table td {
+      padding: 5px 12px;
+      font-size: 10.5pt;
+    }
+    .label-col {
+      width: 140px;
+      font-weight: bold;
+      color: #1e293b;
+    }
+    .val-col {
+      font-weight: bold;
+      color: #0f172a;
+    }
+    .sub-grid {
+      width: 100%;
+      margin: 14px 0;
+    }
+    .sub-box {
+      width: 48%;
+      border: 1px solid #cbd5e1;
+      vertical-align: top;
+      padding: 10px 14px;
+    }
+    .sub-header {
+      font-size: 11pt;
+      font-weight: bold;
+      color: #0b4a2c;
+      border-bottom: 1.5px solid #0b4a2c;
+      padding-bottom: 4px;
+      margin-bottom: 8px;
+    }
+    .sub-row {
+      font-size: 10pt;
+      margin: 4px 0;
+    }
+    .sub-lbl {
+      color: #475467;
+      font-weight: bold;
+    }
+    .footer-table {
+      width: 100%;
+      border-top: 1.5px solid #cbd5e1;
+      margin-top: 14px;
+      padding-top: 10px;
+    }
+    .footer-table td {
+      vertical-align: bottom;
+      font-size: 10pt;
+    }
+    .sig-line {
+      border-bottom: 1.5px solid #1e293b;
+      width: 180px;
+      margin: 0 auto 4px auto;
+    }
+  </style>
+</head>
+<body>
+  <div class="Section1">
+    <table class="frame-table" cellpadding="0" cellspacing="0">
+      <tr>
+        <td>
+          <div class="uni-title">SHANTO-MARIAM UNIVERSITY OF CREATIVE TECHNOLOGY</div>
+          <div class="uni-loc">Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230</div>
+          
+          <div class="logo-td">
+            <img src="${logoSrc}" width="120" height="120" />
+          </div>
+
+          <div class="uni-faculty">Faculty of Engineering and Technology</div>
+          <div class="uni-dept">Departments of CSE and CSIT</div>
+
+          <table class="banner-table" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="banner-text">${(escapeHtml(data.docType) || "ASSIGNMENT").toUpperCase()}</td>
+            </tr>
+          </table>
+
+          <table class="course-table" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="label-col">Course Title:</td>
+              <td class="val-col">${escapeHtml(data.courseTitle)}</td>
+            </tr>
+            <tr>
+              <td class="label-col">Course Code:</td>
+              <td class="val-col">${escapeHtml(data.courseCode)}</td>
+            </tr>
+            <tr>
+              <td class="label-col">Experiment No.:</td>
+              <td class="val-col">${escapeHtml(data.experimentNo)}</td>
+            </tr>
+            <tr>
+              <td class="label-col">Experiment Title:</td>
+              <td class="val-col">${escapeHtml(data.experimentTitle)}</td>
+            </tr>
+          </table>
+
+          <table class="sub-grid" cellpadding="0" cellspacing="0">
+            <tr>
+              <td class="sub-box">
+                <div class="sub-header">SUBMITTED BY</div>
+                <div class="sub-row"><span class="sub-lbl">Name: </span><b>${escapeHtml(data.studentName)}</b></div>
+                <div class="sub-row"><span class="sub-lbl">ID: </span><b>${escapeHtml(data.studentId)}</b></div>
+                <div class="sub-row"><span class="sub-lbl">Semester: </span><b>${escapeHtml(data.semester)}</b></div>
+                <div class="sub-row"><span class="sub-lbl">Section: </span><b>${escapeHtml(data.section)}</b></div>
+              </td>
+              <td style="width: 4%;"></td>
+              <td class="sub-box">
+                <div class="sub-header">SUBMITTED TO</div>
+                <div class="sub-row"><span class="sub-lbl">Name: </span><b>${escapeHtml(data.teacherName)}</b></div>
+                <div class="sub-row"><span class="sub-lbl">Designation: </span><b>${escapeHtml(data.teacherPosition)}</b></div>
+                <div class="sub-row"><span class="sub-lbl">Department: </span><b>${escapeHtml(data.teacherDepartment)}</b></div>
+              </td>
+            </tr>
+          </table>
+
+          <table class="footer-table" cellpadding="0" cellspacing="0">
+            <tr>
+              <td style="width: 60%;">
+                <div style="margin-bottom: 4px;"><b>Date of Experiment: </b>${escapeHtml(data.experimentDate)}</div>
+                <div><b>Date of Submission: </b>${escapeHtml(data.submissionDate)}</div>
+              </td>
+              <td style="width: 40%; text-align: center;">
+                <div class="sig-line"></div>
+                <div style="color: #475467; font-weight: bold; font-size: 9pt;">Teacher's Signature</div>
+              </td>
+            </tr>
+          </table>
+        </td>
+      </tr>
+    </table>
+  </div>
+</body>
+</html>`;
+
+      const blob = new Blob(['\ufeff' + htmlContent], { type: 'application/msword;charset=utf-8' });
+      const link = document.createElement("a");
+      link.download = `${baseName}_cover.doc`;
+      link.href = URL.createObjectURL(blob);
+      document.body.appendChild(link);
+      link.click();
+      document.body.removeChild(link);
+      setTimeout(() => URL.revokeObjectURL(link.href), 1000);
     }
 
     function bindEvents() {
@@ -1547,10 +2231,8 @@
 
       const originalBtnText = generateBtnText.textContent;
       generateBtn.disabled = true;
-      generateBtnText.textContent = "Exporting...";
 
       try {
-        const paper = el("paper");
         const studentNameVal = el("studentName").value.trim();
         const courseTitleVal = el("courseTitle").value.trim();
         const docTypeVal = el("docType").value.trim();
@@ -1559,6 +2241,38 @@
           .replace(/[^\w\-]+/g, "_")
           .toLowerCase();
 
+        const formData = {
+          docType: docTypeVal,
+          courseTitle: el("courseTitle").value.trim(),
+          courseCode: el("courseCode").value.trim(),
+          experimentNo: el("experimentNo").value.trim(),
+          experimentTitle: el("experimentTitle").value.trim(),
+          studentName: studentNameVal,
+          studentId: el("studentId").value.trim(),
+          semester: el("semester").value.trim(),
+          section: el("section").value.trim(),
+          teacherName: el("teacherName").value.trim(),
+          teacherPosition: el("teacherPosition").value.trim(),
+          teacherDepartment: el("teacherDepartment").value.trim(),
+          experimentDate: el("experimentDate").value.trim(),
+          submissionDate: el("submissionDate").value.trim(),
+        };
+
+        if (type === "docx") {
+          generateBtnText.textContent = "Generating DOCX...";
+          await exportDocx(baseName, formData);
+          return;
+        }
+
+        if (type === "doc") {
+          generateBtnText.textContent = "Generating DOC...";
+          exportDoc(baseName, formData);
+          return;
+        }
+
+        generateBtnText.textContent = type === "png" ? "Exporting PNG..." : "Exporting PDF...";
+
+        const paper = el("paper");
         const waitForFonts = document.fonts && document.fonts.ready ? document.fonts.ready : Promise.resolve();
 
         const waitForLogo = () => {
@@ -1632,7 +2346,7 @@
         }
       } catch (err) {
         console.error("Export error:", err);
-        alert("An error occurred during export. Please check the console or try again.");
+        alert("An error occurred during export: " + (err && err.message ? err.message : err));
       } finally {
         generateBtn.disabled = false;
         generateBtnText.textContent = originalBtnText;

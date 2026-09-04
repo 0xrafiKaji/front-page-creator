@@ -1,4 +1,4 @@
-const CACHE_NAME = 'front-page-creator-v2';
+const CACHE_NAME = 'front-page-creator-v3';
 const ASSETS_TO_CACHE = [
   './',
   './index.html',
@@ -8,7 +8,8 @@ const ASSETS_TO_CACHE = [
   './icon-512.png',
   'https://fonts.googleapis.com/css2?family=Cinzel:wght@600;700;800;900&family=Inter:wght@400;500;600;700&family=Noto+Sans:wght@400;500;600;700;800&family=Noto+Serif:wght@400;600;700;800&display=swap',
   'https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js',
-  'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js'
+  'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js',
+  'https://cdn.jsdelivr.net/npm/docx@9.7.1/dist/index.iife.js'
 ];
 
 self.addEventListener('install', (event) => {

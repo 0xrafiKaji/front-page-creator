@@ -10,7 +10,7 @@ A modern, mobile-friendly web app for generating polished, professional academic
 - **Real-Time Live Preview:** Full A4 live rendering reflecting all inputs in real-time.
 - **Mobile Responsive & Auto-Scaling:** Specially optimized for smartphones with easy tab switching (`Edit Form` & `Live Preview`) and auto-scaled A4 sheet preview without horizontal clipping.
 - **Installable Web App (PWA):** Easily add to your smartphone's home screen as a standalone app shortcut with offline support.
-- **High-Quality Export:** Export as standard 300 DPI A4 PDF or crisp PNG image.
+- **High-Quality Export:** Export as standard 300 DPI A4 PDF, editable Microsoft Word document (.docx / .doc), or crisp PNG image.
 - **Zero Server Setup:** Runs directly in any modern browser and deploys effortlessly to GitHub Pages.
 
 ## Run Locally
@@ -35,4 +35,6 @@ Simply open `index.html` in any modern browser.
 ## Libraries Used
 - [html2canvas](https://github.com/niklasvh/html2canvas)
 - [jsPDF](https://github.com/parallax/jsPDF)
+- [docx](https://github.com/dolanmiu/docx)
+
 
