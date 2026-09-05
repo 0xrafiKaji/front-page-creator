@@ -556,7 +556,7 @@
       content: "";
       position: absolute;
       inset: 8mm;
-      border: 2px solid var(--paper-border);
+      border: 2px solid var(--theme-primary, var(--paper-border));
       pointer-events: none;
       z-index: 10;
     }
@@ -583,10 +583,10 @@
       width: 9mm;
       height: 9mm;
     }
-    .corner-tl { top: -1px; left: -1px; border-top: 3px solid #0b4a2c; border-left: 3px solid #0b4a2c; }
-    .corner-tr { top: -1px; right: -1px; border-top: 3px solid #0b4a2c; border-right: 3px solid #0b4a2c; }
-    .corner-bl { bottom: -1px; left: -1px; border-bottom: 3px solid #0b4a2c; border-left: 3px solid #0b4a2c; }
-    .corner-br { bottom: -1px; right: -1px; border-bottom: 3px solid #0b4a2c; border-right: 3px solid #0b4a2c; }
+    .corner-tl { top: -1px; left: -1px; border-top: 3px solid var(--theme-primary, #0b4a2c); border-left: 3px solid var(--theme-primary, #0b4a2c); }
+    .corner-tr { top: -1px; right: -1px; border-top: 3px solid var(--theme-primary, #0b4a2c); border-right: 3px solid var(--theme-primary, #0b4a2c); }
+    .corner-bl { bottom: -1px; left: -1px; border-bottom: 3px solid var(--theme-primary, #0b4a2c); border-left: 3px solid var(--theme-primary, #0b4a2c); }
+    .corner-br { bottom: -1px; right: -1px; border-bottom: 3px solid var(--theme-primary, #0b4a2c); border-right: 3px solid var(--theme-primary, #0b4a2c); }
 
     /* Vertically Balanced Content Container */
     .paper-content {
@@ -611,7 +611,7 @@
       font-family: "Cinzel", "Noto Serif", Georgia, serif;
       font-size: 21.5px;
       font-weight: 800;
-      color: var(--uni-green);
+      color: var(--theme-primary, #0b4a2c);
       letter-spacing: 0.035em;
       line-height: 1.25;
       text-transform: uppercase;
@@ -655,7 +655,7 @@
       font-family: "Noto Serif", serif;
       font-size: 14.5px;
       font-weight: 700;
-      color: #0b4a2c;
+      color: var(--theme-primary, #0b4a2c);
       margin-top: 2px;
       line-height: 1.35;
     }
@@ -678,7 +678,7 @@
     .header-divider .diamond {
       width: 6px;
       height: 6px;
-      background: #0b4a2c;
+      background: var(--theme-primary, #0b4a2c);
       transform: rotate(45deg);
     }
 
@@ -694,18 +694,18 @@
       font-size: 25px;
       font-weight: 900;
       letter-spacing: 0.14em;
-      color: #0b4a2c;
+      color: var(--theme-primary, #0b4a2c);
       text-transform: uppercase;
       padding: 7px 36px;
-      border-top: 2.5px solid #0b4a2c;
-      border-bottom: 2.5px solid #0b4a2c;
+      border-top: 2.5px solid var(--theme-primary, #0b4a2c);
+      border-bottom: 2.5px solid var(--theme-primary, #0b4a2c);
     }
 
     /* 3. Course & Experiment Information Card */
     .course-experiment-card {
       background: #f8fafc;
       border: 1px solid #cbd5e1;
-      border-left: 4.5px solid #0b4a2c;
+      border-left: 4.5px solid var(--theme-primary, #0b4a2c);
       border-radius: 10px;
       padding: 16px 22px;
       display: grid;
@@ -753,11 +753,11 @@
       font-family: "Cinzel", "Noto Serif", serif;
       font-size: 14.5px;
       font-weight: 800;
-      color: #0b4a2c;
+      color: var(--theme-primary, #0b4a2c);
       letter-spacing: 0.05em;
       text-transform: uppercase;
       padding-bottom: 7px;
-      border-bottom: 1.5px solid #0b4a2c;
+      border-bottom: 1.5px solid var(--theme-primary, #0b4a2c);
       margin-bottom: 12px;
     }
 
@@ -954,8 +954,154 @@
       .row2 {
         grid-template-columns: 1fr;
       }
+      .row3 {
+        grid-template-columns: 1fr;
+      }
       .brand-text h1 {
         font-size: 16px;
+      }
+    }
+
+    /* 3-column action row */
+    .row3 {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+    }
+
+    /* Date with Today quick-fill button */
+    .date-input-wrap {
+      position: relative;
+      display: flex;
+      align-items: center;
+      width: 100%;
+    }
+
+    .date-input-wrap input {
+      padding-right: 58px;
+    }
+
+    .btn-today {
+      position: absolute;
+      right: 6px;
+      padding: 4px 8px;
+      background: #f1f5f9;
+      color: #334155;
+      font-size: 11px;
+      font-weight: 700;
+      border: 1px solid #cbd5e1;
+      border-radius: 6px;
+      cursor: pointer;
+      line-height: 1.3;
+      transition: all 0.15s ease;
+    }
+
+    .btn-today:hover {
+      background: var(--theme-primary, #0b4a2c);
+      color: #ffffff;
+      border-color: var(--theme-primary, #0b4a2c);
+    }
+
+    /* Dynamic Theme Colors on Paper */
+    .paper.theme-green {
+      --theme-primary: #0b4a2c;
+    }
+    .paper.theme-navy {
+      --theme-primary: #1e3a8a;
+    }
+    .paper.theme-maroon {
+      --theme-primary: #881337;
+    }
+    .paper.theme-slate {
+      --theme-primary: #1e293b;
+    }
+
+    /* Dynamic Border Variants on Paper */
+    .paper.border-ornate::before {
+      border: 2px solid var(--theme-primary, #0b4a2c);
+    }
+    .paper.border-ornate::after {
+      border: 0.75px solid #64748b;
+    }
+    .paper.border-ornate .paper-corners {
+      display: block;
+    }
+
+    .paper.border-minimal::before {
+      border: 1.5px solid var(--theme-primary, #0b4a2c) !important;
+      inset: 8mm !important;
+    }
+    .paper.border-minimal::after {
+      display: none !important;
+    }
+    .paper.border-minimal .paper-corners {
+      display: none !important;
+    }
+
+    .paper.border-double::before {
+      border: 2px solid var(--theme-primary, #0b4a2c) !important;
+      inset: 8mm !important;
+    }
+    .paper.border-double::after {
+      border: 1px solid var(--theme-primary, #0b4a2c) !important;
+      inset: 9.8mm !important;
+    }
+    .paper.border-double .paper-corners {
+      display: none !important;
+    }
+
+    .paper.border-none::before,
+    .paper.border-none::after {
+      display: none !important;
+    }
+    .paper.border-none .paper-corners {
+      display: none !important;
+    }
+
+    /* Standardized High-Quality Print Stylesheet */
+    @media print {
+      body {
+        background: #ffffff !important;
+        margin: 0 !important;
+        padding: 0 !important;
+      }
+      .panel, .topbar, .mobile-tabs, .install-banner, .modal-backdrop {
+        display: none !important;
+      }
+      .workspace {
+        padding: 0 !important;
+        margin: 0 !important;
+        background: transparent !important;
+        overflow: visible !important;
+        display: block !important;
+      }
+      .previewWrap {
+        padding: 0 !important;
+        overflow: visible !important;
+        background: transparent !important;
+        min-height: 0 !important;
+      }
+      .scale-container {
+        transform: none !important;
+        width: 100% !important;
+        height: auto !important;
+      }
+      .paper {
+        box-shadow: none !important;
+        border-radius: 0 !important;
+        width: 210mm !important;
+        min-width: 210mm !important;
+        max-width: 210mm !important;
+        height: 297mm !important;
+        min-height: 297mm !important;
+        max-height: 297mm !important;
+        margin: 0 !important;
+        page-break-after: avoid !important;
+        page-break-inside: avoid !important;
+      }
+      @page {
+        size: A4 portrait;
+        margin: 0;
       }
     }
   </style>
@@ -1001,13 +1147,13 @@
         </button>
       </div>
 
-      <!-- 1. Fixed University Details -->
+      <!-- 1. University & Faculty Details -->
       <section class="section-card">
         <div class="section-header">
-          <span class="section-tag">Fixed</span>
-          <h3>University Details</h3>
+          <span class="section-tag">University</span>
+          <h3>University &amp; Department</h3>
         </div>
-        <div class="fixed-info-list">
+        <div class="fixed-info-list" style="margin-bottom: 12px;">
           <div class="fixed-info-item">
             <span class="label">University</span>
             <span class="val">Shanto-Mariam University of Creative Technology</span>
@@ -1016,13 +1162,23 @@
             <span class="label">Location</span>
             <span class="val">Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230</span>
           </div>
-          <div class="fixed-info-item">
-            <span class="label">Faculty</span>
-            <span class="val">Faculty of Engineering and Technology</span>
+        </div>
+        <div class="grid">
+          <div class="field">
+            <label for="facultySelect">Faculty</label>
+            <select id="facultySelect"></select>
           </div>
-          <div class="fixed-info-item">
-            <span class="label">Department</span>
-            <span class="val">Departments of CSE and CSIT</span>
+          <div class="field" id="customFacultyField" style="display: none;">
+            <label for="customFacultyInput">Custom Faculty Name</label>
+            <input type="text" id="customFacultyInput" placeholder="e.g. Faculty of Science">
+          </div>
+          <div class="field">
+            <label for="departmentSelect">Department</label>
+            <select id="departmentSelect"></select>
+          </div>
+          <div class="field" id="customDepartmentField" style="display: none;">
+            <label for="customDepartmentInput">Custom Department Name</label>
+            <input type="text" id="customDepartmentInput" placeholder="e.g. Department of Computer Science">
           </div>
         </div>
       </section>
@@ -1043,6 +1199,8 @@
                 <option value="Project Report">Project Report</option>
                 <option value="Term Paper">Term Paper</option>
                 <option value="Thesis Report">Thesis Report</option>
+                <option value="Case Study">Case Study</option>
+                <option value="Internship Report">Internship Report</option>
                 <option value="Class Test">Class Test</option>
                 <option value="Lab Final">Lab Final</option>
               </select>
@@ -1054,6 +1212,27 @@
                 <option value="docx">Word Document (.docx) - Word &amp; Google Docs</option>
                 <option value="doc">Word Document (.doc)</option>
                 <option value="png">PNG Image (.png)</option>
+              </select>
+            </div>
+          </div>
+
+          <div class="row2">
+            <div class="field">
+              <label for="colorTheme">Color Accent</label>
+              <select id="colorTheme">
+                <option value="green" selected>SMUCT Green (Classic)</option>
+                <option value="navy">Academic Navy Blue</option>
+                <option value="maroon">Deep Crimson Maroon</option>
+                <option value="slate">Executive Dark Slate</option>
+              </select>
+            </div>
+            <div class="field">
+              <label for="borderStyle">Frame / Border</label>
+              <select id="borderStyle">
+                <option value="ornate" selected>Classic Ornate (Double + Corners)</option>
+                <option value="minimal">Modern Minimal (Single Line)</option>
+                <option value="double">Executive Double (Clean Double)</option>
+                <option value="none">Borderless (Clean Modern)</option>
               </select>
             </div>
           </div>
@@ -1070,12 +1249,12 @@
 
           <div class="row2">
             <div class="field">
-              <label for="experimentNo">Experiment No.</label>
+              <label for="experimentNo" id="labelExpNo">Assignment No.</label>
               <input type="text" id="experimentNo" placeholder="e.g. 01" value="">
             </div>
             <div class="field">
-              <label for="experimentTitle">Experiment Title</label>
-              <input type="text" id="experimentTitle" placeholder="e.g. Sampling, Quantization & Encoding" value="">
+              <label for="experimentTitle" id="labelExpTitle">Assignment Topic / Title</label>
+              <input type="text" id="experimentTitle" placeholder="e.g. Brand Strategy Analysis" value="">
             </div>
           </div>
         </div>
@@ -1108,6 +1287,13 @@
               <input type="text" id="section" placeholder="e.g. A" value="">
             </div>
           </div>
+
+          <div style="display: flex; align-items: center; justify-content: space-between; margin-top: 2px;">
+            <label style="display: flex; align-items: center; gap: 7px; font-size: 12px; color: #64748b; cursor: pointer; user-select: none;">
+              <input type="checkbox" id="rememberStudent" checked style="width: auto; cursor: pointer;">
+              <span>Auto-remember my student details</span>
+            </label>
+          </div>
         </div>
       </section>
 
@@ -1130,7 +1316,7 @@
             </div>
             <div class="field">
               <label for="teacherDepartment">Teacher Department</label>
-              <input type="text" id="teacherDepartment" placeholder="e.g. Department of CSE and CSIT" value="">
+              <input type="text" id="teacherDepartment" placeholder="e.g. Department of CSE / your department" value="">
             </div>
           </div>
         </div>
@@ -1140,17 +1326,23 @@
       <section class="section-card">
         <div class="section-header">
           <span class="section-tag">Step 4</span>
-          <h3>Dates & Submission</h3>
+          <h3>Dates &amp; Submission</h3>
         </div>
         <div class="grid">
           <div class="row2">
-            <div class="field">
-              <label for="experimentDate">Date of Experiment</label>
-              <input type="text" id="experimentDate" placeholder="e.g. DD/MM/YYYY" value="">
+            <div class="field" id="fieldExpDate">
+              <label for="experimentDate" id="labelExpDate">Assigned Date (Optional)</label>
+              <div class="date-input-wrap">
+                <input type="text" id="experimentDate" placeholder="e.g. DD/MM/YYYY" value="">
+                <button type="button" class="btn-today" id="btnTodayExp" title="Set to Today's Date">Today</button>
+              </div>
             </div>
             <div class="field">
               <label for="submissionDate">Date of Submission</label>
-              <input type="text" id="submissionDate" placeholder="e.g. DD/MM/YYYY" value="">
+              <div class="date-input-wrap">
+                <input type="text" id="submissionDate" placeholder="e.g. DD/MM/YYYY" value="">
+                <button type="button" class="btn-today" id="btnTodaySub" title="Set to Today's Date">Today</button>
+              </div>
             </div>
           </div>
         </div>
@@ -1160,16 +1352,20 @@
       <div class="btnbar">
         <button type="button" class="primary" id="generateBtn">
           <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
-          <span id="generateBtnText">Generate & Download</span>
+          <span id="generateBtnText">Generate &amp; Download</span>
         </button>
-        <div class="row2">
+        <div class="row3">
+          <button type="button" class="secondary" id="directPrintBtn" title="Instant Print to A4 Paper">
+            <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="6 9 6 2 18 2 18 9"/><path d="M6 18H4a2 2 0 0 1-2-2v-5a2 2 0 0 1 2-2h16a2 2 0 0 1 2 2v5a2 2 0 0 1-2 2h-2"/><rect x="6" y="14" width="12" height="8"/></svg>
+            Print
+          </button>
           <button type="button" class="secondary" id="refreshBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="23 4 23 10 17 10"/><polyline points="1 20 1 14 7 14"/><path d="M3.51 9a9 9 0 0 1 14.85-3.36L23 10M1 14l4.64 4.36A9 9 0 0 0 20.49 15"/></svg>
             Refresh
           </button>
           <button type="button" class="ghost" id="clearBtn">
             <svg width="15" height="15" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 0 1-2 2H7a2 2 0 0 1-2-2V6m3 0V4a2 2 0 0 1 2-2h4a2 2 0 0 1 2 2v2"/></svg>
-            Clear Fields
+            Clear
           </button>
         </div>
       </div>
@@ -1183,7 +1379,7 @@
             GitHub: @0xrafiKaji
           </a>
         </div>
-        <div style="font-size: 11px; margin-top: 4px; color: #64748b;">Department of CSE and CSIT · SMUCT</div>
+        <div style="font-size: 11px; margin-top: 4px; color: #64748b;">Shanto-Mariam University of Creative Technology · SMUCT</div>
       </footer>
     </aside>
 
@@ -1245,20 +1441,20 @@
 
               <!-- 3. Course & Experiment Information -->
               <section class="course-experiment-card">
-                <div class="ce-row">
+                <div class="ce-row" id="pvRowCourseTitle">
                   <span class="ce-label">Course Title:</span>
                   <span class="ce-val" id="pvCourseTitle"></span>
                 </div>
-                <div class="ce-row">
+                <div class="ce-row" id="pvRowCourseCode">
                   <span class="ce-label">Course Code:</span>
                   <span class="ce-val" id="pvCourseCode"></span>
                 </div>
-                <div class="ce-row">
-                  <span class="ce-label">Experiment No.:</span>
+                <div class="ce-row" id="pvRowExpNo">
+                  <span class="ce-label" id="pvLabelExpNo">Assignment No.:</span>
                   <span class="ce-val" id="pvExperimentNo"></span>
                 </div>
-                <div class="ce-row">
-                  <span class="ce-label">Experiment Title:</span>
+                <div class="ce-row" id="pvRowExpTitle">
+                  <span class="ce-label" id="pvLabelExpTitle">Assignment Topic:</span>
                   <span class="ce-val" id="pvExperimentTitle"></span>
                 </div>
               </section>
@@ -1311,11 +1507,11 @@
               <!-- 5. Experiment / Submission Dates & Teacher Signature -->
               <footer class="footer-section">
                 <div class="dates-block">
-                  <div class="date-row">
-                    <span class="date-label">Date of Experiment:</span>
+                  <div class="date-row" id="pvRowExpDate">
+                    <span class="date-label" id="pvLabelExpDate">Assigned Date:</span>
                     <span class="date-val" id="pvExperimentDate"></span>
                   </div>
-                  <div class="date-row">
+                  <div class="date-row" id="pvRowSubDate">
                     <span class="date-label">Date of Submission:</span>
                     <span class="date-val" id="pvSubmissionDate"></span>
                   </div>
@@ -1389,11 +1585,221 @@
     const formatHint = el("formatHint");
     const docType = el("docType");
     const mainTitle = el("mainTitle");
+    const colorTheme = el("colorTheme");
+    const borderStyle = el("borderStyle");
+    const rememberStudent = el("rememberStudent");
+    const btnTodayExp = el("btnTodayExp");
+    const btnTodaySub = el("btnTodaySub");
+    const directPrintBtn = el("directPrintBtn");
     const generateBtn = el("generateBtn");
     const generateBtnText = el("generateBtnText");
     const refreshBtn = el("refreshBtn");
     const clearBtn = el("clearBtn");
     const logoPreview = el("logoPreview");
+
+    // University Faculties and Departments structure according to official SMUCT website (https://smuct.ac.bd/)
+    const FACULTIES_DATA = [
+      {
+        faculty: "Faculty of Engineering & Technology",
+        departments: [
+          "Departments of CSE and CSIT",
+          "Department of Computer Science & Engineering (CSE)",
+          "Department of Computer Science & Information Technology (CSIT)"
+        ]
+      },
+      {
+        faculty: "Faculty of Design & Technology",
+        departments: [
+          "Department of Fashion Design & Technology (FDT)",
+          "Department of Apparel Manufacturing Management & Technology (AMMT)",
+          "Department of Interior Architecture (DIA)",
+          "Department of Graphic Design & Multimedia (GDM)",
+          "Department of Product Design",
+          "Department of Architecture"
+        ]
+      },
+      {
+        faculty: "Faculty of Business",
+        departments: [
+          "Department of Business Administration (BBA/MBA)"
+        ]
+      },
+      {
+        faculty: "Faculty of Humanities & Social Sciences",
+        departments: [
+          "Department of English (Language & Literature)",
+          "Department of Law (LLB)",
+          "Department of Sociology & Anthropology",
+          "Department of Bangla",
+          "Department of Government & Politics",
+          "Department of Islamic Studies"
+        ]
+      },
+      {
+        faculty: "Faculty of Fine & Performing Arts",
+        departments: [
+          "Department of Fine Arts (Drawing & Painting)",
+          "Department of Music (Rabindra, Nazrul, Classical)",
+          "Department of Dance"
+        ]
+      }
+    ];
+
+    const facultySelect = el("facultySelect");
+    const departmentSelect = el("departmentSelect");
+    const customFacultyField = el("customFacultyField");
+    const customFacultyInput = el("customFacultyInput");
+    const customDepartmentField = el("customDepartmentField");
+    const customDepartmentInput = el("customDepartmentInput");
+    const teacherDepartmentInput = el("teacherDepartment");
+    let isTeacherDeptManuallyEdited = false;
+
+    function getSelectedFaculty() {
+      if (!facultySelect) return "Faculty of Engineering & Technology";
+      if (facultySelect.value === "__custom__") {
+        return (customFacultyInput && customFacultyInput.value.trim()) || "Faculty of Engineering & Technology";
+      }
+      return facultySelect.value;
+    }
+
+    function getSelectedDepartment() {
+      if (!departmentSelect) return "Departments of CSE and CSIT";
+      if (departmentSelect.value === "__custom__") {
+        return (customDepartmentInput && customDepartmentInput.value.trim()) || "Departments of CSE and CSIT";
+      }
+      return departmentSelect.value;
+    }
+
+    function saveFacultyPreferences() {
+      try {
+        if (facultySelect) localStorage.setItem("smuct_faculty", facultySelect.value);
+        if (departmentSelect) localStorage.setItem("smuct_dept", departmentSelect.value);
+        if (customFacultyInput && customFacultyInput.value.trim()) {
+          localStorage.setItem("smuct_custom_faculty", customFacultyInput.value.trim());
+        }
+        if (customDepartmentInput && customDepartmentInput.value.trim()) {
+          localStorage.setItem("smuct_custom_dept", customDepartmentInput.value.trim());
+        }
+      } catch (e) {}
+    }
+
+    function updateDepartmentOptions(preferredDept) {
+      if (!facultySelect || !departmentSelect) return;
+      const selectedFac = facultySelect.value;
+      departmentSelect.innerHTML = "";
+
+      if (selectedFac === "__custom__") {
+        if (customFacultyField) customFacultyField.style.display = "block";
+        const opt = document.createElement("option");
+        opt.value = "__custom__";
+        opt.textContent = "Custom Department...";
+        departmentSelect.appendChild(opt);
+        departmentSelect.value = "__custom__";
+        if (customDepartmentField) customDepartmentField.style.display = "block";
+        return;
+      } else {
+        if (customFacultyField) customFacultyField.style.display = "none";
+      }
+
+      const facultyObj = FACULTIES_DATA.find(f => f.faculty === selectedFac);
+      if (facultyObj) {
+        facultyObj.departments.forEach(dept => {
+          const opt = document.createElement("option");
+          opt.value = dept;
+          opt.textContent = dept;
+          departmentSelect.appendChild(opt);
+        });
+      }
+
+      const customDeptOpt = document.createElement("option");
+      customDeptOpt.value = "__custom__";
+      customDeptOpt.textContent = "Other / Custom Department...";
+      departmentSelect.appendChild(customDeptOpt);
+
+      if (preferredDept && Array.from(departmentSelect.options).some(o => o.value === preferredDept)) {
+        departmentSelect.value = preferredDept;
+      } else {
+        departmentSelect.selectedIndex = 0;
+      }
+
+      if (departmentSelect.value === "__custom__") {
+        if (customDepartmentField) customDepartmentField.style.display = "block";
+      } else {
+        if (customDepartmentField) customDepartmentField.style.display = "none";
+      }
+    }
+
+    function initFacultyAndDepartments() {
+      if (!facultySelect || !departmentSelect) return;
+
+      facultySelect.innerHTML = "";
+      FACULTIES_DATA.forEach(item => {
+        const opt = document.createElement("option");
+        opt.value = item.faculty;
+        opt.textContent = item.faculty;
+        facultySelect.appendChild(opt);
+      });
+
+      const customFacOpt = document.createElement("option");
+      customFacOpt.value = "__custom__";
+      customFacOpt.textContent = "Other / Custom Faculty...";
+      facultySelect.appendChild(customFacOpt);
+
+      let savedFaculty = null;
+      let savedDept = null;
+      try {
+        savedFaculty = localStorage.getItem("smuct_faculty");
+        savedDept = localStorage.getItem("smuct_dept");
+        const savedCustomFaculty = localStorage.getItem("smuct_custom_faculty");
+        const savedCustomDept = localStorage.getItem("smuct_custom_dept");
+        if (savedCustomFaculty && customFacultyInput) customFacultyInput.value = savedCustomFaculty;
+        if (savedCustomDept && customDepartmentInput) customDepartmentInput.value = savedCustomDept;
+      } catch (e) {}
+
+      if (savedFaculty && Array.from(facultySelect.options).some(o => o.value === savedFaculty)) {
+        facultySelect.value = savedFaculty;
+      } else {
+        facultySelect.selectedIndex = 0;
+      }
+
+      updateDepartmentOptions(savedDept);
+
+      // Auto-fill teacher department if empty on initial load
+      if (teacherDepartmentInput && !teacherDepartmentInput.value.trim()) {
+        teacherDepartmentInput.value = getSelectedDepartment();
+      }
+    }
+
+    function onFacultyChange() {
+      updateDepartmentOptions();
+      const newDept = getSelectedDepartment();
+
+      if (teacherDepartmentInput && !isTeacherDeptManuallyEdited) {
+        teacherDepartmentInput.value = newDept;
+      }
+
+      saveFacultyPreferences();
+      sync();
+    }
+
+    function onDepartmentChange() {
+      if (departmentSelect.value === "__custom__") {
+        if (customDepartmentField) {
+          customDepartmentField.style.display = "block";
+          if (customDepartmentInput) customDepartmentInput.focus();
+        }
+      } else {
+        if (customDepartmentField) customDepartmentField.style.display = "none";
+      }
+
+      const newDept = getSelectedDepartment();
+      if (teacherDepartmentInput && !isTeacherDeptManuallyEdited) {
+        teacherDepartmentInput.value = newDept;
+      }
+
+      saveFacultyPreferences();
+      sync();
+    }
 
     // Mobile Navigation & Zoom Controls
     const btnTabForm = el("btnTabForm");
@@ -1498,15 +1904,200 @@
     if (btnTabForm) btnTabForm.addEventListener('click', () => switchMobileTab(false));
     if (btnTabPreview) btnTabPreview.addEventListener('click', () => switchMobileTab(true));
 
+    const DOC_TYPE_CONFIG = {
+      "Assignment": {
+        expNoLabel: "Assignment No.",
+        expTitleLabel: "Assignment Name / Topic",
+        expDateLabel: "Date of Assignment",
+        expNoPlaceholder: "e.g. 01",
+        expTitlePlaceholder: "e.g. Strategic Brand Management",
+        pvExpNo: "Assignment No.:",
+        pvExpTitle: "Assignment Name:",
+        pvExpDate: "Date of Assignment:"
+      },
+      "Lab Report": {
+        expNoLabel: "Experiment No.",
+        expTitleLabel: "Experiment Name",
+        expDateLabel: "Date of Experiment",
+        expNoPlaceholder: "e.g. 01",
+        expTitlePlaceholder: "e.g. Verification of Logic Gates & Truth Tables",
+        pvExpNo: "Experiment No.:",
+        pvExpTitle: "Experiment Name:",
+        pvExpDate: "Date of Experiment:"
+      },
+      "Lab Final": {
+        expNoLabel: "Lab Problem No.",
+        expTitleLabel: "Problem Name / Title",
+        expDateLabel: "Exam Date",
+        expNoPlaceholder: "e.g. Set-A",
+        expTitlePlaceholder: "e.g. Socket Programming Implementation",
+        pvExpNo: "Lab Problem No.:",
+        pvExpTitle: "Problem Name:",
+        pvExpDate: "Exam Date:"
+      },
+      "Project Report": {
+        expNoLabel: "Project ID / Group No.",
+        expTitleLabel: "Project Name / Title",
+        expDateLabel: "Project Date",
+        expNoPlaceholder: "e.g. Group-03",
+        expTitlePlaceholder: "e.g. Smart Campus Management System",
+        pvExpNo: "Project ID / Group No.:",
+        pvExpTitle: "Project Name:",
+        pvExpDate: "Project Date:"
+      },
+      "Term Paper": {
+        expNoLabel: "Term Paper No.",
+        expTitleLabel: "Term Paper Name / Topic",
+        expDateLabel: "Paper Date",
+        expNoPlaceholder: "e.g. 01",
+        expTitlePlaceholder: "e.g. Comparative Analysis of Bangladesh Labor Laws",
+        pvExpNo: "Term Paper No.:",
+        pvExpTitle: "Term Paper Name:",
+        pvExpDate: "Paper Date:"
+      },
+      "Thesis Report": {
+        expNoLabel: "Thesis ID / Reg No.",
+        expTitleLabel: "Thesis Title / Topic",
+        expDateLabel: "Defense Date",
+        expNoPlaceholder: "e.g. TH-2026",
+        expTitlePlaceholder: "e.g. Deep Learning Approaches for Pattern Generation",
+        pvExpNo: "Thesis ID / Reg No.:",
+        pvExpTitle: "Thesis Title:",
+        pvExpDate: "Defense Date:"
+      },
+      "Case Study": {
+        expNoLabel: "Case Study No.",
+        expTitleLabel: "Case Study Name / Title",
+        expDateLabel: "Case Date",
+        expNoPlaceholder: "e.g. Case 01",
+        expTitlePlaceholder: "e.g. Market Disruption in Ready-Made Garments",
+        pvExpNo: "Case Study No.:",
+        pvExpTitle: "Case Study Name:",
+        pvExpDate: "Case Date:"
+      },
+      "Internship Report": {
+        expNoLabel: "Host Organization",
+        expTitleLabel: "Internship Report Title",
+        expDateLabel: "Internship Period",
+        expNoPlaceholder: "e.g. Beximco Textiles Ltd.",
+        expTitlePlaceholder: "e.g. Corporate Finance and Audit Practices",
+        pvExpNo: "Organization:",
+        pvExpTitle: "Report Title:",
+        pvExpDate: "Internship Period:"
+      },
+      "Class Test": {
+        expNoLabel: "Class Test No.",
+        expTitleLabel: "Test Topics / Name",
+        expDateLabel: "Test Date",
+        expNoPlaceholder: "e.g. CT-01",
+        expTitlePlaceholder: "e.g. Database Normalization & SQL Queries",
+        pvExpNo: "Class Test No.:",
+        pvExpTitle: "Topics / Name:",
+        pvExpDate: "Test Date:"
+      }
+    };
+
+    function updateDocTypeLabels() {
+      const selectedType = (docType && docType.value) || "Assignment";
+      const config = DOC_TYPE_CONFIG[selectedType] || DOC_TYPE_CONFIG["Assignment"];
+
+      const labelExpNo = el("labelExpNo");
+      const labelExpTitle = el("labelExpTitle");
+      const labelExpDate = el("labelExpDate");
+      const expNoInput = el("experimentNo");
+      const expTitleInput = el("experimentTitle");
+      const expDateInput = el("experimentDate");
+      const pvLabelExpNo = el("pvLabelExpNo");
+      const pvLabelExpTitle = el("pvLabelExpTitle");
+      const pvLabelExpDate = el("pvLabelExpDate");
+
+      if (labelExpNo) labelExpNo.textContent = config.expNoLabel;
+      if (labelExpTitle) labelExpTitle.textContent = config.expTitleLabel;
+      if (labelExpDate) labelExpDate.textContent = config.expDateLabel;
+
+      if (expNoInput) expNoInput.placeholder = config.expNoPlaceholder;
+      if (expTitleInput) expTitleInput.placeholder = config.expTitlePlaceholder;
+      if (expDateInput) expDateInput.placeholder = "e.g. DD/MM/YYYY";
+
+      if (pvLabelExpNo) pvLabelExpNo.textContent = config.pvExpNo;
+      if (pvLabelExpTitle) pvLabelExpTitle.textContent = config.pvExpTitle;
+      if (pvLabelExpDate) pvLabelExpDate.textContent = config.pvExpDate;
+    }
+
+    function saveStudentDetailsIfEnabled() {
+      if (!rememberStudent || !rememberStudent.checked) return;
+      try {
+        localStorage.setItem("smuct_remember_student", "true");
+        if (el("studentName")) localStorage.setItem("smuct_student_name", el("studentName").value);
+        if (el("studentId")) localStorage.setItem("smuct_student_id", el("studentId").value);
+        if (el("semester")) localStorage.setItem("smuct_semester", el("semester").value);
+        if (el("section")) localStorage.setItem("smuct_section", el("section").value);
+      } catch (e) {}
+    }
+
+    function loadStudentDetails() {
+      try {
+        const isRemember = localStorage.getItem("smuct_remember_student");
+        if (rememberStudent && isRemember !== null) {
+          rememberStudent.checked = isRemember === "true";
+        }
+        if (rememberStudent && rememberStudent.checked) {
+          const sName = localStorage.getItem("smuct_student_name");
+          const sId = localStorage.getItem("smuct_student_id");
+          const sSem = localStorage.getItem("smuct_semester");
+          const sSec = localStorage.getItem("smuct_section");
+          if (sName && el("studentName")) el("studentName").value = sName;
+          if (sId && el("studentId")) el("studentId").value = sId;
+          if (sSem && el("semester")) el("semester").value = sSem;
+          if (sSec && el("section")) el("section").value = sSec;
+        }
+      } catch (e) {}
+    }
+
+    function loadSavedThemeAndBorder() {
+      try {
+        const savedTheme = localStorage.getItem("smuct_theme");
+        const savedBorder = localStorage.getItem("smuct_border");
+        if (savedTheme && colorTheme && Array.from(colorTheme.options).some(o => o.value === savedTheme)) {
+          colorTheme.value = savedTheme;
+        }
+        if (savedBorder && borderStyle && Array.from(borderStyle.options).some(o => o.value === savedBorder)) {
+          borderStyle.value = savedBorder;
+        }
+      } catch (e) {}
+    }
+
+    function getTodayDateString() {
+      const today = new Date();
+      const dd = String(today.getDate()).padStart(2, '0');
+      const mm = String(today.getMonth() + 1).padStart(2, '0');
+      const yyyy = today.getFullYear();
+      return `${dd}/${mm}/${yyyy}`;
+    }
+
     function sync() {
-      // Fixed university information
+      // University information
       el("uniName").textContent = "Shanto-Mariam University of Creative Technology";
       el("uniLoc").textContent = "Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230";
-      el("facultyText").textContent = "Faculty of Engineering and Technology";
-      el("deptText").textContent = "Departments of CSE and CSIT";
+      el("facultyText").textContent = getSelectedFaculty();
+      el("deptText").textContent = getSelectedDepartment();
 
-      // Document Type Header
-      mainTitle.textContent = (docType.value || "ASSIGNMENT").toUpperCase();
+      // Document Type Header & Dynamic Labels
+      const currentDocType = (docType && docType.value) || "Assignment";
+      mainTitle.textContent = currentDocType.toUpperCase();
+      updateDocTypeLabels();
+
+      // Theme Accent and Border Styling
+      const paper = el("paper");
+      if (paper) {
+        const themeVal = (colorTheme && colorTheme.value) || "green";
+        const borderVal = (borderStyle && borderStyle.value) || "ornate";
+        paper.className = `paper theme-${themeVal} border-${borderVal}`;
+        try {
+          localStorage.setItem("smuct_theme", themeVal);
+          localStorage.setItem("smuct_border", borderVal);
+        } catch (e) {}
+      }
 
       // Sync all user-editable fields (leaves empty string when empty)
       fields.forEach(([src, dst]) => {
@@ -1516,6 +2107,18 @@
           pvElem.textContent = inputElem.value || "";
         }
       });
+
+      // Ensure all rows are always visible in preview
+      const pvRowExpNo = el("pvRowExpNo");
+      const pvRowExpTitle = el("pvRowExpTitle");
+      const pvRowExpDate = el("pvRowExpDate");
+
+      if (pvRowExpNo) pvRowExpNo.style.display = "grid";
+      if (pvRowExpTitle) pvRowExpTitle.style.display = "grid";
+      if (pvRowExpDate) pvRowExpDate.style.display = "flex";
+
+      // Save Student Details if Auto-Remember is active
+      saveStudentDetailsIfEnabled();
 
       // Output hint
       if (formatHint) {
@@ -1565,14 +2168,19 @@
       const docxLib = window.docx;
       if (!docxLib) throw new Error("docx library is not loaded");
 
-      const GREEN = "0B4A2C";
+      const THEME_HEX = {
+        green: "0B4A2C",
+        navy: "1E3A8A",
+        maroon: "881337",
+        slate: "1E293B"
+      };
+      const PRIMARY = THEME_HEX[data.colorTheme] || "0B4A2C";
       const SLATE = "1E293B";
       const MUTED = "475467";
       const BORDER_COLOR = "CBD5E1";
       const BG_LIGHT = "F8FAFC";
 
       // Balanced A4 Twip measurements (A4: 210mm x 297mm = 11906 x 16838 twips)
-      // 10mm margins = 10772 printable width
       const frameW = 10500;
       const innerW = 10100;
       const col1W = 2600;
@@ -1593,7 +2201,7 @@
               font: "Cinzel",
               bold: true,
               size: 28, // 14pt
-              color: GREEN,
+              color: PRIMARY,
             }),
           ],
         }),
@@ -1640,7 +2248,7 @@
           spacing: { before: 0, after: 35 },
           children: [
             new docxLib.TextRun({
-              text: "Faculty of Engineering and Technology",
+              text: data.faculty || "Faculty of Engineering & Technology",
               font: "Times New Roman",
               bold: true,
               size: 23, // 11.5pt
@@ -1653,11 +2261,11 @@
           spacing: { before: 0, after: 280 },
           children: [
             new docxLib.TextRun({
-              text: "Departments of CSE and CSIT",
+              text: data.department || "Departments of CSE and CSIT",
               font: "Times New Roman",
               bold: true,
               size: 21, // 10.5pt
-              color: GREEN,
+              color: PRIMARY,
             }),
           ],
         }),
@@ -1670,8 +2278,8 @@
           alignment: docxLib.AlignmentType.CENTER,
           spacing: { before: 140, after: 140 },
           border: {
-            top: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 6 },
-            bottom: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: GREEN, space: 6 },
+            top: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: PRIMARY, space: 6 },
+            bottom: { style: docxLib.BorderStyle.DOUBLE, size: 12, color: PRIMARY, space: 6 },
           },
           children: [
             new docxLib.TextRun({
@@ -1679,7 +2287,7 @@
               font: "Cinzel",
               bold: true,
               size: 32, // 16pt
-              color: GREEN,
+              color: PRIMARY,
             }),
           ],
         }),
@@ -1688,12 +2296,12 @@
         new docxLib.Paragraph({ spacing: { before: 520, after: 0 } })
       );
 
-      // 3. Course Details Table with explicit columnWidths so Google Docs & Word render at full width
+      // 3. Course Details Table with conditional non-empty rows
       const courseRows = [
         { label: "Course Title:", val: data.courseTitle || "" },
         { label: "Course Code:", val: data.courseCode || "" },
-        { label: "Experiment No.:", val: data.experimentNo || "" },
-        { label: "Experiment Title:", val: data.experimentTitle || "" },
+        { label: `${(data.labelExpNo || "Assignment No.").replace(/:$/, "")}:`, val: data.experimentNo || "" },
+        { label: `${(data.labelExpTitle || "Assignment Name").replace(/:$/, "")}:`, val: data.experimentTitle || "" },
       ];
 
       innerChildren.push(
@@ -1704,7 +2312,7 @@
           borders: {
             top: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
             bottom: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
-            left: { style: docxLib.BorderStyle.SINGLE, size: 24, color: GREEN },
+            left: { style: docxLib.BorderStyle.SINGLE, size: 24, color: PRIMARY },
             right: { style: docxLib.BorderStyle.SINGLE, size: 4, color: BORDER_COLOR },
             insideHorizontal: { style: docxLib.BorderStyle.NONE },
             insideVertical: { style: docxLib.BorderStyle.NONE },
@@ -1789,9 +2397,9 @@
                   children: [
                     new docxLib.Paragraph({
                       spacing: { before: 0, after: 120 },
-                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: GREEN, space: 4 } },
+                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: PRIMARY, space: 4 } },
                       children: [
-                        new docxLib.TextRun({ text: "SUBMITTED BY", font: "Cinzel", bold: true, size: 21, color: GREEN }),
+                        new docxLib.TextRun({ text: "SUBMITTED BY", font: "Cinzel", bold: true, size: 21, color: PRIMARY }),
                       ],
                     }),
                     new docxLib.Paragraph({
@@ -1850,9 +2458,9 @@
                   children: [
                     new docxLib.Paragraph({
                       spacing: { before: 0, after: 120 },
-                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: GREEN, space: 4 } },
+                      border: { bottom: { style: docxLib.BorderStyle.SINGLE, size: 8, color: PRIMARY, space: 4 } },
                       children: [
-                        new docxLib.TextRun({ text: "SUBMITTED TO", font: "Cinzel", bold: true, size: 21, color: GREEN }),
+                        new docxLib.TextRun({ text: "SUBMITTED TO", font: "Cinzel", bold: true, size: 21, color: PRIMARY }),
                       ],
                     }),
                     new docxLib.Paragraph({
@@ -1888,6 +2496,23 @@
       );
 
       // 5. Bottom Dates and Signature Table
+      const dateParagraphs = [
+        new docxLib.Paragraph({
+          spacing: { before: 0, after: 50 },
+          children: [
+            new docxLib.TextRun({ text: `${(data.labelExpDate || "Date of Experiment").replace(/:$/, "")}: `, font: "Arial", bold: true, size: 19, color: SLATE }),
+            new docxLib.TextRun({ text: data.experimentDate || "", font: "Arial", bold: true, size: 19, color: "0F172A" }),
+          ],
+        }),
+        new docxLib.Paragraph({
+          spacing: { before: 50, after: 0 },
+          children: [
+            new docxLib.TextRun({ text: "Date of Submission: ", font: "Arial", bold: true, size: 19, color: SLATE }),
+            new docxLib.TextRun({ text: data.submissionDate || "", font: "Arial", bold: true, size: 19, color: "0F172A" }),
+          ],
+        }),
+      ];
+
       innerChildren.push(
         new docxLib.Table({
           alignment: docxLib.AlignmentType.CENTER,
@@ -1907,22 +2532,7 @@
                 new docxLib.TableCell({
                   width: { size: footerLeftW, type: docxLib.WidthType.DXA },
                   margins: { top: 200, bottom: 80, left: 30, right: 30 },
-                  children: [
-                    new docxLib.Paragraph({
-                      spacing: { before: 0, after: 50 },
-                      children: [
-                        new docxLib.TextRun({ text: "Date of Experiment: ", font: "Arial", bold: true, size: 19, color: SLATE }),
-                        new docxLib.TextRun({ text: data.experimentDate || "", font: "Arial", bold: true, size: 19, color: "0F172A" }),
-                      ],
-                    }),
-                    new docxLib.Paragraph({
-                      spacing: { before: 50, after: 0 },
-                      children: [
-                        new docxLib.TextRun({ text: "Date of Submission: ", font: "Arial", bold: true, size: 19, color: SLATE }),
-                        new docxLib.TextRun({ text: data.submissionDate || "", font: "Arial", bold: true, size: 19, color: "0F172A" }),
-                      ],
-                    }),
-                  ],
+                  children: dateParagraphs,
                 }),
                 new docxLib.TableCell({
                   width: { size: footerRightW, type: docxLib.WidthType.DXA },
@@ -1956,19 +2566,43 @@
         })
       );
 
-      // Outer Frame Table: Universal double-line green border compatible with Google Docs, Word Mobile & Desktop
+      // Outer Frame Table styling according to borderStyle
+      let outerBorderConfig;
+      if (data.borderStyle === "minimal") {
+        outerBorderConfig = {
+          top: { style: docxLib.BorderStyle.SINGLE, size: 12, color: PRIMARY },
+          bottom: { style: docxLib.BorderStyle.SINGLE, size: 12, color: PRIMARY },
+          left: { style: docxLib.BorderStyle.SINGLE, size: 12, color: PRIMARY },
+          right: { style: docxLib.BorderStyle.SINGLE, size: 12, color: PRIMARY },
+          insideHorizontal: { style: docxLib.BorderStyle.NONE },
+          insideVertical: { style: docxLib.BorderStyle.NONE },
+        };
+      } else if (data.borderStyle === "none") {
+        outerBorderConfig = {
+          top: { style: docxLib.BorderStyle.NONE },
+          bottom: { style: docxLib.BorderStyle.NONE },
+          left: { style: docxLib.BorderStyle.NONE },
+          right: { style: docxLib.BorderStyle.NONE },
+          insideHorizontal: { style: docxLib.BorderStyle.NONE },
+          insideVertical: { style: docxLib.BorderStyle.NONE },
+        };
+      } else {
+        // ornate or double
+        outerBorderConfig = {
+          top: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: PRIMARY },
+          bottom: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: PRIMARY },
+          left: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: PRIMARY },
+          right: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: PRIMARY },
+          insideHorizontal: { style: docxLib.BorderStyle.NONE },
+          insideVertical: { style: docxLib.BorderStyle.NONE },
+        };
+      }
+
       const outerFrame = new docxLib.Table({
         alignment: docxLib.AlignmentType.CENTER,
         width: { size: frameW, type: docxLib.WidthType.DXA },
         columnWidths: [frameW],
-        borders: {
-          top: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
-          bottom: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
-          left: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
-          right: { style: docxLib.BorderStyle.DOUBLE, size: 24, color: GREEN },
-          insideHorizontal: { style: docxLib.BorderStyle.NONE },
-          insideVertical: { style: docxLib.BorderStyle.NONE },
-        },
+        borders: outerBorderConfig,
         rows: [
           new docxLib.TableRow({
             children: [
@@ -2037,13 +2671,97 @@
         node.addEventListener("change", sync);
       });
 
+      if (facultySelect) {
+        facultySelect.addEventListener("change", onFacultyChange);
+      }
+      if (departmentSelect) {
+        departmentSelect.addEventListener("change", onDepartmentChange);
+      }
+      if (teacherDepartmentInput) {
+        teacherDepartmentInput.addEventListener("input", () => {
+          isTeacherDeptManuallyEdited = true;
+        });
+      }
+      if (customFacultyInput) {
+        customFacultyInput.addEventListener("input", () => {
+          saveFacultyPreferences();
+          sync();
+        });
+      }
+      if (customDepartmentInput) {
+        customDepartmentInput.addEventListener("input", () => {
+          if (teacherDepartmentInput && !isTeacherDeptManuallyEdited) {
+            teacherDepartmentInput.value = getSelectedDepartment();
+          }
+          saveFacultyPreferences();
+          sync();
+        });
+      }
+
+      if (docType) {
+        docType.addEventListener("change", () => {
+          updateDocTypeLabels();
+          sync();
+        });
+      }
+
+      if (rememberStudent) {
+        rememberStudent.addEventListener("change", () => {
+          if (rememberStudent.checked) {
+            saveStudentDetailsIfEnabled();
+          } else {
+            try {
+              localStorage.removeItem("smuct_remember_student");
+              localStorage.removeItem("smuct_student_name");
+              localStorage.removeItem("smuct_student_id");
+              localStorage.removeItem("smuct_semester");
+              localStorage.removeItem("smuct_section");
+            } catch (e) {}
+          }
+        });
+      }
+
+      if (btnTodayExp) {
+        btnTodayExp.addEventListener("click", () => {
+          const expDate = el("experimentDate");
+          if (expDate) {
+            expDate.value = getTodayDateString();
+            sync();
+          }
+        });
+      }
+
+      if (btnTodaySub) {
+        btnTodaySub.addEventListener("click", () => {
+          const subDate = el("submissionDate");
+          if (subDate) {
+            subDate.value = getTodayDateString();
+            sync();
+          }
+        });
+      }
+
+      if (directPrintBtn) {
+        directPrintBtn.addEventListener("click", () => {
+          sync();
+          window.print();
+        });
+      }
+
       refreshBtn.addEventListener("click", sync);
 
       clearBtn.addEventListener("click", () => {
         fields.forEach(([src]) => {
+          if (rememberStudent && rememberStudent.checked && ["studentName", "studentId", "semester", "section"].includes(src)) {
+            return; // Preserve remembered student info
+          }
           const inputElem = el(src);
           if (inputElem) inputElem.value = "";
         });
+        isTeacherDeptManuallyEdited = false;
+        if (teacherDepartmentInput) {
+          teacherDepartmentInput.value = getSelectedDepartment();
+        }
         sync();
       });
 
@@ -2069,6 +2787,13 @@
 
         const formData = {
           docType: docTypeVal,
+          faculty: getSelectedFaculty(),
+          department: getSelectedDepartment(),
+          colorTheme: (colorTheme && colorTheme.value) || "green",
+          borderStyle: (borderStyle && borderStyle.value) || "ornate",
+          labelExpNo: (el("pvLabelExpNo") ? el("pvLabelExpNo").textContent.replace(/:$/, "") : "Assignment No."),
+          labelExpTitle: (el("pvLabelExpTitle") ? el("pvLabelExpTitle").textContent.replace(/:$/, "") : "Assignment Topic"),
+          labelExpDate: (el("pvLabelExpDate") ? el("pvLabelExpDate").textContent.replace(/:$/, "") : "Assigned Date"),
           courseTitle: el("courseTitle").value.trim(),
           courseCode: el("courseCode").value.trim(),
           experimentNo: el("experimentNo").value.trim(),
@@ -2174,6 +2899,9 @@
     }
 
     // Initialize
+    initFacultyAndDepartments();
+    loadSavedThemeAndBorder();
+    loadStudentDetails();
     bindEvents();
     sync();
     updatePreviewScale();

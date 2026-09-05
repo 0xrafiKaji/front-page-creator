@@ -3,10 +3,14 @@
 A modern, mobile-friendly web app for generating polished, professional academic cover pages and lab report front pages for **Shanto-Mariam University of Creative Technology**.
 
 ## Features
-- **Fixed University Preset:** Shanto-Mariam University of Creative Technology (Plot 06, Road 06, Sector 17, Uttara, Dhaka-1230; Faculty of Engineering and Technology; Departments of CSE and CSIT).
+- **All Faculties & Departments Supported:** Full university-wide support for Shanto-Mariam University of Creative Technology across all 5 faculties (Engineering & Technology, Design & Technology, Business, Humanities & Social Sciences, Fine & Performing Arts) with smart cascading dropdowns, auto-filling, and custom entry options.
+- **Adaptive Document Types & Dynamic Labels:** Tailored for Assignments, Lab Reports, Project Reports, Term Papers, Theses, Case Studies, Internship Reports, and Class Tests with contextual labels and automatic omission of unnecessary blank rows.
+- **Formal Frame & Border Variants:** Choose between Classic Ornate (double border + corner accents), Modern Minimal (single line), Executive Double (clean double line), or Borderless.
+- **Academic Color Accent Themes:** 4 formal styles matching SMUCT branding (Classic Green, Academic Navy Blue, Deep Crimson Maroon, Executive Dark Slate) synchronized across preview and Word (.docx) export.
+- **Direct 1-Click A4 Printing:** High-fidelity browser printing directly to A4 paper with background graphics preserved and UI elements automatically hidden.
+- **Smart Student Auto-Remember:** Optionally remembers your Name, ID, Semester, and Section in localStorage so you don't have to retype them every time.
+- **Quick "Today" Date Autofill:** Single-click date buttons to instantly stamp today's date in `DD/MM/YYYY` format.
 - **Built-in University Logo:** Embedded high-resolution university logo, visually balanced for print and screen.
-- **Academic Fields:** Course Title, Course Code, Experiment No., Experiment Title, Student Details (Name, ID, Semester, Section), Teacher Details (Name, Designation, Department), and manual Dates (Date of Experiment, Date of Submission).
-- **Clean Blank Initial State:** All editable fields start completely empty without dummy or sample values.
 - **Real-Time Live Preview:** Full A4 live rendering reflecting all inputs in real-time.
 - **Mobile Responsive & Auto-Scaling:** Specially optimized for smartphones with easy tab switching (`Edit Form` & `Live Preview`) and auto-scaled A4 sheet preview without horizontal clipping.
 - **Installable Web App (PWA):** Easily add to your smartphone's home screen as a standalone app shortcut with offline support.
